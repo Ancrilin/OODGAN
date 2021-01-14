@@ -47,7 +47,7 @@ class SMP_Processor(BertProcessor):
             self.id_to_label = json.load(f)
             self.label_to_id = {label: i for i, label in enumerate(self.id_to_label)}
 
-    def parse_line(self, line: list) -> list:
+    def parse_line(self, line: dict) -> list:
         """
         :param line: [text, label]
         :return: [text_ids, mask, type_ids, label_ids]
@@ -80,3 +80,9 @@ if __name__ == '__main__':
     bertConfig = BertConfig('config/bert.ini')
     bertConfig = bertConfig('bert-base-chinese')
     processor = SMP_Processor(bertConfig, maxlen=32)
+    label_path = 'data/smp/smp_full.label'
+    processor.load_label(label_path)
+    print(processor.label_to_id)
+    print(processor.id_to_label)
+    print(processor.parse_line({'text':"不是吧", 'domain':'chat'}))
+    print(bertConfig.hidden_size)
