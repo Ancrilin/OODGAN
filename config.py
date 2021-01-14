@@ -36,10 +36,13 @@ class BertConfig(Config):
         # 要先转成dict，python3.6的bug，3.7修复
         param = super().__call__(section)
 
-        file = os.path.join(param['PreTrainModelDir'], 'config.json')
+        file = os.path.join(param['PreTrainModelDir'] + '/', 'config.json')
+        print(file)
+        print(param)
         with open(file, 'r', encoding='utf-8') as f:
             for k, v in json.load(f).items():
                 param.__setattr__(k, v)
+        print(param)
         return param
 
 
