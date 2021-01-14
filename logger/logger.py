@@ -2,6 +2,7 @@
 
 import logging
 
+
 class Logger:
     def __init__(self, log_save_path):
         logger = logging.getLogger(__name__)
