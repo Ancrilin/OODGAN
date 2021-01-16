@@ -15,6 +15,7 @@ import os
 class Config:
     config_parser = ConfigParser()
 
+    # 读取配置文件
     def __init__(self, path):
         self.parse(path)
 
@@ -22,6 +23,7 @@ class Config:
         with open(path, 'r', encoding='utf-8') as f:
             self.config_parser.read_file(f)
 
+    # 获取配置中的某个section
     def __call__(self, section: str) -> SectionProxy:
         """pass the section name and return config for a section"""
         "like dict"
@@ -29,20 +31,23 @@ class Config:
 
 
 class BertConfig(Config):
+    # 读取配置文件
     def __init__(self, path):
         super().__init__(path)
 
+    # 获取配置中的某个section
+    # SectionProxy类型可以用数组下标获取section内的键值
     def __call__(self, section) -> SectionProxy:
         # 要先转成dict，python3.6的bug，3.7修复
         param = super().__call__(section)
 
         file = os.path.join(param['PreTrainModelDir'] + '/', 'config.json')
-        print(file)
-        print(param)
+        # print(file)
+        # print(param)
         with open(file, 'r', encoding='utf-8') as f:
             for k, v in json.load(f).items():
                 param.__setattr__(k, v)
-        print(param)
+        # print(param)
         return param
 
 
