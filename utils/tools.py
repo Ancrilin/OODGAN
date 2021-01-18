@@ -31,8 +31,6 @@ def check_manual_seed(seed):
 
     torch.backends.cudnn.benchmark = False  # if benchmark=True, deterministic will be False
 
-    print('Using manual seed: {seed}'.format(seed=seed))
-
 
 def convert_to_int_by_threshold(array, threshold=0.5):
     """
@@ -91,6 +89,59 @@ def output_cases(texts, ground_truth, predicts, path, processor, logit=None):
                                  'ground_truth_label', 'predict_label',
                                  'ground_truth_is_ind', 'predict_is_ind'],
                   index=False)
+
+
+class EarlyStopping:
+    """Early stops the training if validation loss doesn't improve after a given patience.
+    refer to: https://github.com/Bjarten/early-stopping-pytorch/blob/master/pytorchtools.py
+    """
+
+    def __init__(self, patience=7, delta=0, logger=None):
+        """
+        Args:
+            patience (int): How long to wait after last time validation loss improved.
+                            Default: 7
+            verbose (bool): If True, prints a message for each validation loss improvement.
+                            Default: False
+            delta (float): Minimum change in the monitored quantity to qualify as an improvement.
+                            Default: 0
+        """
+
+        self.patience = patience
+        self.counter = 0
+        self.best_score = None
+        self.early_stop = False
+        self.delta = delta
+        self.logger = logger
+
+    def __call__(self, score):
+        """
+        return:
+         1 表示要保存模型
+         0 表示不需要保存模型
+         -1 表示不需要模型，且超过了patience，需要early stop
+        """
+        if self.best_score is None:
+            if self.logger:
+                self.logger.info('Saving model, best score is {}'.format(score))
+            self.best_score = score
+            return 1
+        elif score <= self.best_score + self.delta:
+            self.counter += 1
+            if self.logger:
+                self.logger.info('EarlyStopping counter: {} out of {}, best score is {}'.
+                                 format(self.counter, self.patience, self.best_score))
+            if self.counter >= self.patience:
+                if self.logger:
+                    self.logger.info('Stopping training.')
+                return -1
+            return 0
+        else:
+            if self.logger:
+                self.logger.info('Saving model, best score is {}, improved by {}'.format(score, score - self.best_score))
+            self.best_score = score
+            self.counter = 0
+            return 1
 
 
 

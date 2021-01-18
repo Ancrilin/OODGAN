@@ -22,6 +22,7 @@ from config import BertConfig, Config
 from data_processor.smp_processor import SMP_Processor
 from model.bert import BertClassifier
 from data_utils.dataset import MyDataset
+from utils.tools import EarlyStopping
 
 # 检测设备
 if torch.cuda.is_available():
@@ -56,6 +57,7 @@ def main(args):
     logger.info('Checking...')
     check_args(args)
     check_manual_seed(args.seed)
+    logger.info('Using manual seed: {seed}'.format(seed=args.seed))
 
     if torch.cuda.is_available():
         logger.info('The number of GPU: ' + str(torch.cuda.device_count()))
@@ -72,14 +74,15 @@ def main(args):
     data_config = Config('config/data.ini')
     data_config = data_config(args.dataset)
 
-    logger.info("dataset: " + args.dataset + "  data_file: " + args.data_file)
+    logger.info("dataset: " + args.dataset)
+    logger.info("data_file: " + args.data_file)
     # Prepare data processor
     data_path = os.path.join(data_config['DataDir'], data_config[args.data_file])  # 把目录和文件名合成一个路径
     label_path = data_path.replace('.json', '.label')  #获取label.json文件路径
 
     # 实例化数据处理类
     processor = SMP_Processor(bert_config, maxlen=32)
-    processor.load_label(label_path)    #加载label, 生成label_to_ids与ids_to_label
+    processor.load_label(label_path)    #加载label, 生成label_to_ids 与 ids_to_label
 
     n_class = len(processor.id_to_label)
     # 实例化bert encoder
@@ -100,6 +103,90 @@ def main(args):
                                       batch_size=args.train_batch_size // args.gradient_accumulation_steps,
                                       shuffle=True,
                                       num_workers=2)
+        n_sample = len(train_dataloader)
+        early_stopping = EarlyStopping(args.patience, logger=logger)
+
+        # Loss function
+        classified_loss = torch.nn.CrossEntropyLoss().to(device)
+
+        # Optimizers
+        optimizer = AdamW(model.parameters(), args.lr)
+
+        iteration = 0
+        train_loss = []
+        if dev_dataset:
+            valid_loss = []
+            valid_ind_class_acc = []
+
+        nonlocal global_step
+        for i in range(args.n_epoch):
+
+            model.train()
+            total_loss = 0
+
+            for sample in tqdm.tqdm(train_dataloader):
+                # 数据加载到设备
+                sample = (i.to(device) for i in sample)
+                token, mask, type_ids, y = sample
+                batch = len(token)
+
+                logits = model(token, mask, type_ids)
+                loss = classified_loss(logits, y.long())
+                total_loss += loss.item()
+                loss = loss / args.gradient_accumulation_steps
+                loss.backward()
+                # bp and update parameters
+                if (global_step + 1) % args.gradient_accumulation_steps == 0:
+                    optimizer.step()
+                    optimizer.zero_grad()
+                    global_step += 1
+
+            logger.info('[Epoch {}] Train: train_loss: {}'.format(i, total_loss / n_sample))
+            logger.info('-' * 30)
+
+            train_loss.append(total_loss / n_sample)
+            iteration += 1
+
+            # 验证集
+            if dev_dataset:
+                logger.info('#################### eval result at step {} ####################'.format(global_step))
+                eval_result = eval(dev_dataset)
+
+                valid_loss.append(eval_result['loss'])
+                valid_ind_class_acc.append(eval_result['ind_class_acc'])
+
+                # 1 表示要保存模型
+                # 0 表示不需要保存模型
+                # -1 表示不需要模型，且超过了patience，需要early stop
+                signal = early_stopping(eval_result['accuracy'])
+                if signal == -1:
+                    break
+                elif signal == 0:
+                    pass
+                elif signal == 1:
+                    save_model(model, path=config['model_save_path'], model_name='bert')
+
+
+    def eval(dataset):
+        dev_dataloader = DataLoader(dataset, batch_size=args.predict_batch_size, shuffle=False, num_workers=2)
+        n_sample = len(dev_dataloader)
+        result = dict()
+
+        model.eval()
+
+        classified_loss = torch.nn.CrossEntropyLoss().to(device)
+
+        for sample in tqdm.tqdm(dev_dataloader):
+            sample = (i.to(device) for i in sample)
+            token, mask, type_ids, y = sample
+            batch = len(token)
+
+            with torch.no_grad():
+                logit = model(token, mask, type_ids)
+                all_logit.append(logit)
+                all_pred.append(torch.argmax(logit, 1))
+                total_loss += classified_loss(logit, y.long())
+
 
     if args.do_train:
         # 读取数据
@@ -161,12 +248,19 @@ if __name__ == '__main__':
     parser.add_argument('--train_batch_size', default=32, type=int,
                         help='Batch size for training.')
 
+    parser.add_argument('--predict_batch_size', default=16, type=int,
+                        help='Batch size for evaluating and testing.')
+
+    parser.add_argument('--patience', default=10, type=int,
+                        help='Number of epoch of early stopping patience.')
+
     parser.add_argument('--fine_tune', action='store_true', default=True,
                         help='Whether to fine tune BERT during training.')
 
     # 解析参数
     args = parser.parse_args()
 
+    # Log
     from logger import Logger
     os.makedirs(args.output_dir, exist_ok=True)
     logger = Logger(os.path.join(args.output_dir, 'train.log'))
