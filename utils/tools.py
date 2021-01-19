@@ -143,7 +143,38 @@ class EarlyStopping:
             self.counter = 0
             return 1
 
+def ErrorRateAt95Recall(labels, scores):
+    recall_point = 0.95
+    labels = numpy.asarray(labels)
+    scores = numpy.asarray(scores)
+    # Sort label-score tuples by the score in descending order.
+    indices = numpy.argsort(scores)[::-1]    #降序排列
+    sorted_labels = labels[indices]
+    sorted_scores = scores[indices]
+    n_match = sum(sorted_labels)
+    n_thresh = recall_point * n_match
+    thresh_index = numpy.argmax(numpy.cumsum(sorted_labels) >= n_thresh)
+    FP = numpy.sum(sorted_labels[:thresh_index] == 0)
+    TN = numpy.sum(sorted_labels[thresh_index:] == 0)
+    return float(FP) / float(FP + TN)
 
+
+def save_model(model: torch.nn.Module, path: str, model_name: str):
+    '''保存模型'''
+    state_dict = {model_name: model.state_dict()}
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    torch.save(state_dict, path)
+    return state_dict
+
+
+def load_model(model: torch.nn.Module, path: str, model_name: str):
+    '''保存模型'''
+    checkpoint = torch.load(path)
+    model.load_state_dict(checkpoint[model_name])
+    return model
+
+def save_result(result, save_path):
+    numpy.save(save_path, numpy.array([result['all_binary_y'], result['y_score']]))
 
 if __name__ == '__main__':
     pass

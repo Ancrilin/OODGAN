@@ -24,9 +24,25 @@ class BertClassifier(nn.Module):
         self.bert = BertModel.from_pretrained(config['PreTrainModelDir'])
         self.classifier = torch.nn.Linear(config.hidden_size, num_labels)
 
+        print('config')
+        print(self.config)
+        print('num_labels')
+        print(num_labels)
+
     def forward(self, input_ids, attention_mask=None, token_type_ids=None):
-        sequence_output, pooled_output = self.bert(input_ids, attention_mask, token_type_ids)
+        # print('input')
+        # print(type(input_ids))
+        # print(input_ids)
+        # sequence_output, pooled_output = self.bert(input_ids, attention_mask, token_type_ids)
+        bert_result = self.bert(input_ids, attention_mask, token_type_ids, return_dict=False)
+        # sequence_output = result.last_hidden_state
+        # pooled_output = result.pooler_output
+        # print('result')
+        # print(type(result))
+        # print(result)
+        last_hidden_state, pooled_output = bert_result
         logits = self.classifier(pooled_output)
+        # logits = self.classifier(result[1])
         return logits
 
     def freeze_bert_encoder(self):

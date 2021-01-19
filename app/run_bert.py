@@ -10,6 +10,7 @@
 import argparse
 import os
 import pickle
+import numpy as np
 
 import pandas as pd
 import torch
@@ -22,7 +23,8 @@ from config import BertConfig, Config
 from data_processor.smp_processor import SMP_Processor
 from model.bert import BertClassifier
 from data_utils.dataset import MyDataset
-from utils.tools import EarlyStopping
+from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_model, load_model, save_result
+import utils.metrics as metrics
 
 # 检测设备
 if torch.cuda.is_available():
@@ -85,6 +87,10 @@ def main(args):
     processor.load_label(label_path)    #加载label, 生成label_to_ids 与 ids_to_label
 
     n_class = len(processor.id_to_label)
+    # config = vars(args)  # 返回参数字典
+    config = args.__dict__
+    config['model_save_path'] = os.path.join(args.output_dir, 'save', 'bert.pt')
+    config['n_class'] = n_class
     # 实例化bert encoder
     model = BertClassifier(bert_config, n_class)  # Bert encoder
     logger.info("fine_tune: " + str(args.fine_tune))
@@ -167,14 +173,37 @@ def main(args):
                     save_model(model, path=config['model_save_path'], model_name='bert')
 
 
+                logger.info('valid_eer: {}'.format(eval_result['eer']))
+                logger.info('valid_oos_ind_precision: {}'.format(eval_result['oos_ind_precision']))
+                logger.info('valid_oos_ind_recall: {}'.format(eval_result['oos_ind_recall']))
+                logger.info('valid_oos_ind_f_score: {}'.format(eval_result['oos_ind_f_score']))
+                logger.info('valid_auc: {}'.format(eval_result['auc']))
+                logger.info('valid_fpr95: {}'.format(eval_result['fpr95']))
+                logger.info('valid_accuracy: {}'.format(eval_result['accuracy']))
+                logger.info('report')
+                logger.info(eval_result['report'])
+
+        from utils.visualization import draw_curve
+        draw_curve(train_loss, iteration, 'train_loss', args.output_dir)
+        if dev_dataset:
+            draw_curve(valid_loss, iteration, 'valid_loss', args.output_dir)
+            draw_curve(valid_ind_class_acc, iteration, 'valid_ind_class_accuracy', args.output_dir)
+
+        if args.patience >= args.n_epoch:
+            save_model(model, path=config['model_save_path'], model_name='bert')
+
     def eval(dataset):
         dev_dataloader = DataLoader(dataset, batch_size=args.predict_batch_size, shuffle=False, num_workers=2)
         n_sample = len(dev_dataloader)
-        result = dict()
+        result = dict() # eval result
 
         model.eval()
 
         classified_loss = torch.nn.CrossEntropyLoss().to(device)
+
+        all_pred = []
+        all_logit = []
+        total_loss = 0
 
         for sample in tqdm.tqdm(dev_dataloader):
             sample = (i.to(device) for i in sample)
@@ -183,10 +212,93 @@ def main(args):
 
             with torch.no_grad():
                 logit = model(token, mask, type_ids)
-                all_logit.append(logit)
-                all_pred.append(torch.argmax(logit, 1))
+                all_logit.append(logit) # 推断值
+                all_pred.append(torch.argmax(logit, 1)) # 预测label
                 total_loss += classified_loss(logit, y.long())
 
+        all_y = LongTensor(dataset.dataset[:, -1].astype(int)).cpu()  # [length, n_class] 原始真实label
+        all_binary_y = (all_y != 0).long()  # [length, 1] label 0 is oos    二分类ood， ind 真实label
+
+        all_pred = torch.cat(all_pred, 0).cpu() # 预测值拼接
+        all_logit = torch.cat(all_logit, 0).cpu() # 推断值拼接
+
+        y_score = all_logit.softmax(1)[:, 1].tolist()
+        eer = metrics.cal_eer(all_binary_y, y_score)
+        oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
+            all_pred, all_y)
+        ind_class_acc = metrics.ind_class_accuracy(all_pred, all_y)
+        fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
+
+        report = metrics.binary_recall_fscore(all_y, all_pred)
+
+        result['eer'] = eer
+        result['ind_class_acc'] = ind_class_acc
+        result['loss'] = total_loss / n_sample # avg loss
+        result['y_score'] = y_score
+        result['all_binary_y'] = all_binary_y
+        result['oos_ind_precision'] = oos_ind_precision
+        result['oos_ind_recall'] = oos_ind_recall
+        result['oos_ind_f_score'] = oos_ind_fscore
+        result['auc'] = roc_auc_score(all_binary_y, y_score)
+        result['fpr95'] = fpr95
+        result['report'] = report
+        result['accuracy'] = metrics.binary_accuracy(all_binary_y, all_pred)
+
+        return result
+
+    def test(dataset):
+        load_model(model, path=config['model_save_path'], model_name='bert')
+        test_dataloader = DataLoader(dataset, batch_size=args.predict_batch_size, shuffle=False, num_workers=2)
+        n_sample = len(test_dataloader)
+        result = dict()
+        model.eval()
+
+        classified_loss = torch.nn.CrossEntropyLoss().to(device)
+
+        all_pred = []
+        all_logit = []
+        total_loss = 0
+
+        for sample in tqdm.tqdm(test_dataloader):
+            sample = (i.to(device) for i in sample)
+            token, mask, type_ids, y = sample
+            batch = len(token)
+
+            with torch.no_grad():
+                logit = model(token, mask, type_ids)
+                all_logit.append(logit)  # 推断值
+                all_pred.append(torch.argmax(logit, 1))  # 预测label
+                total_loss += classified_loss(logit, y.long())
+
+        all_y = LongTensor(dataset.dataset[:, -1].astype(int)).cpu()  # [length, n_class] 原始真实label
+        all_binary_y = (all_y != 0).long()  # [length, 1] label 0 is oos    二分类ood， ind 真实label
+
+        all_pred = torch.cat(all_pred, 0).cpu()  # 预测值拼接
+        all_logit = torch.cat(all_logit, 0).cpu()  # 推断值拼接
+
+        y_score = all_logit.softmax(1)[:, 1].tolist()
+        eer = metrics.cal_eer(all_binary_y, y_score)
+        oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
+            all_pred, all_y)
+        ind_class_acc = metrics.ind_class_accuracy(all_pred, all_y)
+        fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
+
+        report = metrics.binary_recall_fscore(all_y, all_pred)
+
+        result['eer'] = eer
+        result['ind_class_acc'] = ind_class_acc
+        result['loss'] = total_loss / n_sample  # avg loss
+        result['y_score'] = y_score
+        result['all_binary_y'] = all_binary_y
+        result['oos_ind_precision'] = oos_ind_precision
+        result['oos_ind_recall'] = oos_ind_recall
+        result['oos_ind_f_score'] = oos_ind_fscore
+        result['auc'] = roc_auc_score(all_binary_y, y_score)
+        result['fpr95'] = fpr95
+        result['report'] = report
+        result['accuracy'] = metrics.binary_accuracy(all_binary_y, all_pred)
+
+        return result
 
     if args.do_train:
         # 读取数据
@@ -203,9 +315,44 @@ def main(args):
         dev_features = processor.convert_to_ids(text_dev_set)
         dev_dataset = MyDataset(dev_features)
 
+        print(np.shape(train_features))
+
         # train
         train(train_dataset, dev_dataset)
 
+    if args.do_eval:
+        logger.info('#################### eval result at step {} ####################'.format(global_step))
+        text_dev_set = processor.read_dataset(data_path, ['val'])
+        dev_features = processor.convert_to_ids(text_dev_set)
+        dev_dataset = MyDataset(dev_features)
+
+        eval_result = eval(dev_dataset)
+        logger.info('eval_eer: {}'.format(eval_result['eer']))
+        logger.info('eval_oos_ind_precision: {}'.format(eval_result['oos_ind_precision']))
+        logger.info('eval_oos_ind_recall: {}'.format(eval_result['oos_ind_recall']))
+        logger.info('eval_oos_ind_f_score: {}'.format(eval_result['oos_ind_f_score']))
+        logger.info('eval_auc: {}'.format(eval_result['auc']))
+        logger.info('eval_fpr95: {}'.format(eval_result['fpr95']))
+        logger.info('eval_accuracy: {}'.format(eval_result['accuracy']))
+        logger.info('report')
+        logger.info(eval_result['report'])
+
+    if args.do_test:
+        text_test_set = processor.read_dataset(data_path, ['test'])
+        test_features = processor.convert_to_ids(text_test_set)
+        test_dataset = MyDataset(test_features)
+        test_result = test(test_dataset)
+
+        save_result(test_result, os.path.join(args.output_dir, 'test_result'))
+        logger.info('test_eer: {}'.format(test_result['eer']))
+        logger.info('test_oos_ind_precision: {}'.format(test_result['oos_ind_precision']))
+        logger.info('test_oos_ind_recall: {}'.format(test_result['oos_ind_recall']))
+        logger.info('test_oos_ind_f_score: {}'.format(test_result['oos_ind_f_score']))
+        logger.info('test_auc: {}'.format(test_result['auc']))
+        logger.info('test_fpr95: {}'.format(test_result['fpr95']))
+        logger.info('test_accuracy: {}'.format(test_result['accuracy']))
+        logger.info('report')
+        logger.info(test_result['report'])
 
 
 if __name__ == '__main__':
@@ -257,13 +404,20 @@ if __name__ == '__main__':
     parser.add_argument('--fine_tune', action='store_true', default=True,
                         help='Whether to fine tune BERT during training.')
 
+    parser.add_argument('--n_epoch', default=500, type=int,
+                        help='Number of epoch for training.')
+
+    parser.add_argument('--lr', type=float, default=4e-5,
+                        help="Learning rate for Discriminator.")
+
     # 解析参数
     args = parser.parse_args()
+
+    os.chdir('../')
 
     # Log
     from logger import Logger
     os.makedirs(args.output_dir, exist_ok=True)
     logger = Logger(os.path.join(args.output_dir, 'train.log'))
     logger.info(os.getcwd())
-    os.chdir('../')
     main(args)

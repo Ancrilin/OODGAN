@@ -50,7 +50,7 @@ def ind_class_accuracy(predicts: torch.Tensor, labels: torch.Tensor, oos_index=0
     return accuracy_score(_labels, _predicts, sample_weight=sample_weight)
 
 
-def accuracy(predicts: torch.Tensor, labels: torch.Tensor):
+def accuracy(labels: torch.Tensor, predicts: torch.Tensor):
     """正确率"""
     _labels = labels.numpy() if isinstance(labels, torch.Tensor) else labels
     _predicts = predicts.numpy() if isinstance(predicts, torch.Tensor) else predicts
@@ -58,7 +58,7 @@ def accuracy(predicts: torch.Tensor, labels: torch.Tensor):
     return accuracy_score(_labels, _predicts)
 
 
-def binary_classification_report(predicts, labels):
+def binary_classification_report(labels, predicts):
     '''
     输出precision, accuracy, f1-score, support
     :param predicts: 预测标签
@@ -110,3 +110,18 @@ def cal_eer(y_true, y_score):
     fpr, tpr, thresholds = metrics.roc_curve(y_true, y_score, pos_label=1)
     eer = brentq(lambda x: 1. - x - interp1d(fpr, tpr)(x), 0., 1.)
     return eer
+
+
+if __name__ == '__main__':
+    predicts = [0, 1, 0, 1, 0, 0]
+    label = [0, 1, 1, 0, 1, 0]
+
+    print(binary_recall_fscore(predicts, label))
+    print(binary_classification_report(predicts, label))
+    print(binary_accuracy(predicts, label))
+    import metrics
+    report = binary_classification_report(predicts, label)
+    dic = dict()
+    dic.update(report)
+    print(report)
+    print(dic['accuracy'])
