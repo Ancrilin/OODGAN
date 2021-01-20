@@ -24,10 +24,6 @@ class BertClassifier(nn.Module):
         self.bert = BertModel.from_pretrained(config['PreTrainModelDir'])
         self.classifier = torch.nn.Linear(config.hidden_size, num_labels)
 
-        print('config')
-        print(self.config)
-        print('num_labels')
-        print(num_labels)
 
     def forward(self, input_ids, attention_mask=None, token_type_ids=None):
         # print('input')

@@ -58,7 +58,7 @@ def accuracy(labels: torch.Tensor, predicts: torch.Tensor):
     return accuracy_score(_labels, _predicts)
 
 
-def binary_classification_report(labels, predicts):
+def binary_classification_report(labels, predicts, output_dict=False):
     '''
     输出precision, accuracy, f1-score, support
     :param predicts: 预测标签
@@ -67,7 +67,7 @@ def binary_classification_report(labels, predicts):
     '''
     predicts = predicts.numpy() if isinstance(predicts, torch.Tensor) else predicts
     labels = labels.numpy() if isinstance(labels, torch.Tensor) else labels
-    return classification_report(labels, predicts, labels=[0, 1], target_names=['ood', 'ind'])
+    return classification_report(labels, predicts, labels=[0, 1], target_names=['ood', 'ind'], output_dict=output_dict)
 
 
 def plot_confusion_matrix(y_true, y_pred, save_path, classes=['ood', 'ind'], cmap=plt.cm.Blues):
