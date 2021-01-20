@@ -17,7 +17,7 @@ import torch
 from sklearn.metrics import roc_curve, auc
 from sklearn.manifold import TSNE
 
-from processor.base_processor import BaseProcessor
+from data_processor.base_processor import BaseProcessor
 
 
 def scatter_plot(data: np.ndarray, processor: BaseProcessor):
