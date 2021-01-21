@@ -23,7 +23,7 @@ from config import BertConfig, Config
 from data_processor.smp_processor import SMP_Processor
 from model.bert import BertClassifier
 from data_utils.dataset import MyDataset
-from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_model, load_model, save_result
+from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_model, load_model, save_result, output_cases, save_feature
 import utils.metrics as metrics
 
 # 检测设备
@@ -285,6 +285,9 @@ def main(args):
 
         report = metrics.binary_classification_report(all_y, all_pred)
 
+        result['all_y'] = all_y.tolist()
+        result['all_pred'] = all_pred.tolist()
+
         result['eer'] = eer
         result['ind_class_acc'] = ind_class_acc
         result['loss'] = total_loss / n_sample  # avg loss
@@ -314,8 +317,6 @@ def main(args):
         train_dataset = MyDataset(train_features)
         dev_features = processor.convert_to_ids(text_dev_set)
         dev_dataset = MyDataset(dev_features)
-
-        print(np.shape(train_features))
 
         # train
         train(train_dataset, dev_dataset)
@@ -353,6 +354,17 @@ def main(args):
         logger.info('test_accuracy: {}'.format(test_result['accuracy']))
         logger.info('report')
         logger.info(test_result['report'])
+
+        save_result(test_result, os.path.join(args.output_dir, 'test_result'))
+
+        # 输出错误cases
+        texts = [line['text'] for line in text_test_set]
+        output_cases(texts, test_result['all_y'], test_result['all_pred'],
+                     os.path.join(args.output_dir, 'test_cases.csv'), processor, test_result['test_logit'])
+
+        # confusion matrix
+        metrics.plot_confusion_matrix(test_result['all_y'], test_result['all_pred'],
+                              args.output_dir)
 
 
 if __name__ == '__main__':

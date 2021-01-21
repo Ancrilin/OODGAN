@@ -176,5 +176,55 @@ def load_model(model: torch.nn.Module, path: str, model_name: str):
 def save_result(result, save_path):
     numpy.save(save_path, numpy.array([result['all_binary_y'], result['y_score']]))
 
+def save_feature(feature, save_path):
+    numpy.save(save_path, numpy.array(feature))
+
+def output_cases(texts, ground_truth, predicts, path, processor, logit=None):
+    """
+    生成csv case
+    :param texts: 文本 list
+    :param ground_truth: 真正标签 数组
+    :param predicts: 预测 数组
+    :param path: 保存路径
+    :param processor: 数据集处理器
+    :return:
+    """
+    ground_truth = ground_truth.numpy().astype(int) if isinstance(ground_truth, torch.Tensor) else ground_truth
+    predicts = predicts.numpy().astype(int) if isinstance(
+        predicts, torch.Tensor) else predicts
+    if logit != None:
+        df = pd.DataFrame(data={
+            'text': texts,
+            'ground_truth': ground_truth,
+            'predict': predicts,
+            'score': logit
+        })
+    else:
+        df = pd.DataFrame(data={
+            'text': texts,
+            'ground_truth': ground_truth,
+            'predict': predicts
+        })
+    df['ground_truth_label'] = df['ground_truth'].apply(lambda i: processor.id_to_label[i])
+    df['predict_label'] = df['predict'].apply(lambda i: processor.id_to_label[i])
+    df['ground_truth_is_ind'] = df['ground_truth'] != 0
+    df['predict_is_ind'] = df['predict'] != 0
+
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    if logit == None:
+        df.to_csv(path, columns=['text',
+                                 'ground_truth', 'predict',
+                                 'ground_truth_label', 'predict_label',
+                                 'ground_truth_is_ind', 'predict_is_ind'],
+                  index=False)
+    else:
+        df.to_csv(path, columns=['text',
+                                 'score',
+                                 'ground_truth', 'predict',
+                                 'ground_truth_label', 'predict_label',
+                                 'ground_truth_is_ind', 'predict_is_ind'],
+                  index=False)
+
+
 if __name__ == '__main__':
     pass

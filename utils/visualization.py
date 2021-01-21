@@ -9,12 +9,13 @@
 
 import os
 from typing import Dict, List
+import itertools
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc,  confusion_matrix
 from sklearn.manifold import TSNE
 
 from data_processor.base_processor import BaseProcessor
@@ -96,3 +97,35 @@ def plot_train_test(train_feature, test_feature, save_path):
     plt.scatter(dim_test_feature[:, 0], dim_test_feature[:, 1], color='blue', label='test_feature', s=3)
     plt.legend()
     plt.savefig(save_path + 'train_test_distribution.png')
+
+def plot_confusion_matrix(y_true, y_pred, save_path, classes=['ood', 'ind'], cmap=plt.cm.Blues):
+    """Plot a confusion matrix using ground truth and predictions."""
+    # Confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+    cm_norm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+
+    #  Figure
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cax = ax.matshow(cm, cmap=plt.cm.Blues)
+    fig.colorbar(cax)
+
+    # Axis
+    plt.title("Confusion matrix")
+    plt.ylabel("True label")
+    plt.xlabel("Predicted label")
+    ax.set_xticklabels([''] + classes)
+    ax.set_yticklabels([''] + classes)
+    ax.xaxis.set_label_position('bottom')
+    ax.xaxis.tick_bottom()
+
+    # Values
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, f"{cm[i, j]:d} ({cm_norm[i, j] * 100:.1f}%)",
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    # Display
+    plt.savefig(save_path + '/confusion_matrix.png')
+    plt.show()
