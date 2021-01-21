@@ -287,6 +287,7 @@ def main(args):
 
         result['all_y'] = all_y.tolist()
         result['all_pred'] = all_pred.tolist()
+        result['test_logit'] = all_logit.tolist()
 
         result['eer'] = eer
         result['ind_class_acc'] = ind_class_acc
