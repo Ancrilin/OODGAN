@@ -179,8 +179,8 @@ def main(args):
                 optimizer_D.zero_grad()
                 real_f_vector, discriminator_output, classification_output = D(real_feature, return_feature=True)
                 discriminator_output = discriminator_output.squeeze()
-                print(np.shape(y))
-                real_loss = adversarial_loss(discriminator_output, (y != 0.0).float())  # chat=0
+                print((y != 0.0).float())
+                real_loss = adversarial_loss(discriminator_output, (y != 0.0).float())  # chat=0 ood=0 ind=1
                 if n_class > 2:  # 大于2表示除了训练判别器还要训练分类器 binary 只训练判别器
                     class_loss = classified_loss(classification_output, y.long())
                     real_loss += class_loss
@@ -483,10 +483,11 @@ def main(args):
 
         logger.info('remove ood data in train_dataset')
         # 去除训练集中的ood数据
-        if config['dataset'] == 'smp':
-            text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']
-        else:
-            text_train_set = [sample for sample in text_train_set if sample[-1] != 'oos']
+        if args.oodp:
+            if config['dataset'] == 'smp':
+                text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']
+            else:
+                text_train_set = [sample for sample in text_train_set if sample[-1] != 'oos']
 
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]
@@ -626,12 +627,15 @@ if __name__ == '__main__':
     parser.add_argument('--fine_tune', action='store_true', default=True,
                         help='Whether to fine tune BERT during training.')
 
+    parser.add_argument('--oodp', action='store_true', default=True,
+                        help='Whether to remove ood data.')
+
     parser.add_argument('--n_epoch', default=500, type=int,
                         help='Number of epoch for training.')
 
     parser.add_argument('--D_lr', type=float, default=1e-5, help="Learning rate for Discriminator.")
     parser.add_argument('--G_lr', type=float, default=1e-5, help="Learning rate for Generator.")
-    parser.add_argument('--bert_lr', type=float, default=2e-4, help="Learning rate for Generator.")\
+    parser.add_argument('--bert_lr', type=float, default=2e-4, help="Learning rate for Generator.")
 
     parser.add_argument('--fake_sample_weight', type=float, default=1.0, help="Weight of fake sample loss for Discriminator.")
 
