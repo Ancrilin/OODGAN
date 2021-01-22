@@ -188,7 +188,7 @@ def main(args):
                 # print(discriminator_output)
                 # print('y')
                 # print(y)
-                real_loss = adversarial_loss(discriminator_output, (y != 0.0).float())  # chat=0 ood=0 ind=1
+                real_loss = adversarial_loss(discriminator_output, (y != 0.0).long())  # chat=0 ood=0 ind=1
                 if n_class > 2:  # 大于2表示除了训练判别器还要训练分类器 binary 只训练判别器
                     class_loss = classified_loss(classification_output, y.long())
                     real_loss += class_loss
