@@ -483,7 +483,7 @@ def main(args):
 
         logger.info('remove ood data in train_dataset')
         # 去除训练集中的ood数据
-        if args.oodp:
+        if args.remove_oodp:
             if config['dataset'] == 'smp':
                 text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']
             else:
@@ -627,7 +627,7 @@ if __name__ == '__main__':
     parser.add_argument('--fine_tune', action='store_true', default=True,
                         help='Whether to fine tune BERT during training.')
 
-    parser.add_argument('--oodp', action='store_true', default=True,
+    parser.add_argument('--remove_oodp', action='store_true', default=False,
                         help='Whether to remove ood data.')
 
     parser.add_argument('--n_epoch', default=500, type=int,
