@@ -442,6 +442,9 @@ def main(args):
         result['fpr95'] = fpr95
         result['report'] = report
         result['accuracy'] = metrics.binary_accuracy(all_binary_y, all_detection_binary_preds)
+        result['all_y'] = all_y
+        result['all_detection_binary_preds'] = all_detection_binary_preds
+        result['all_detection_preds'] = all_detection_preds
 
         if n_class > 2:
             result['class_loss'] = class_loss
@@ -527,8 +530,8 @@ def main(args):
 
         # 输出错误cases
         texts = [line['text'] for line in text_test_set]
-        output_cases(texts, test_result['all_y'], test_result['all_pred'],
-                     os.path.join(args.output_dir, 'test_cases.csv'), processor, test_result['test_logit'])
+        output_cases(texts, test_result['all_y'], test_result['all_detection_binary_preds'],
+                     os.path.join(args.output_dir, 'test_cases.csv'), processor, test_result['all_detection_preds'])
 
         # confusion matrix
         metrics.plot_confusion_matrix(test_result['all_y'], test_result['all_pred'],
