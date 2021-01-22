@@ -480,6 +480,12 @@ def main(args):
         text_train_set = processor.read_dataset(data_path, ['train'])
         text_dev_set = processor.read_dataset(data_path, ['val'])
 
+        # 去除训练集中的ood数据
+        if config['dataset'] == 'smp':
+            text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']
+        else:
+            text_train_set = [sample for sample in text_train_set if sample[-1] != 'oos']
+
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]
         train_features = processor.convert_to_ids(text_train_set)
