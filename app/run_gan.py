@@ -180,6 +180,7 @@ def main(args):
                 print(discriminator_output.size())
                 print(np.shape((y != 0.0).float()))
                 print((y != 0.0).float())
+                print(discriminator_output)
                 real_loss = adversarial_loss(discriminator_output, (y != 0.0).float())  # chat=0
                 if n_class > 2:  # 大于2表示除了训练判别器还要训练分类器 binary 只训练判别器
                     class_loss = classified_loss(classification_output, y.long())
@@ -187,7 +188,7 @@ def main(args):
                     D_class_loss += class_loss.detach()
                 real_loss.backward()
 
-                # # train D on fake
+                # train D on fake
                 z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
                 fake_feature = G(z).detach()
                 fake_discriminator_output = D.detect_only(fake_feature)
