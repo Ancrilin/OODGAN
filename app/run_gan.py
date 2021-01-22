@@ -103,7 +103,7 @@ def main(args):
     config['bert_save_path'] = os.path.join(args.output_dir, 'save', 'bert.pt')
 
     logger.info('n_class' + str(n_class))
-    logger.info('id_to_label: ' + processor.id_to_label)
+    logger.info('id_to_label: ' + str(processor.id_to_label))
 
     D = Discriminator(config)
     G = Generator(config)
