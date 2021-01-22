@@ -102,7 +102,7 @@ def main(args):
     config['gan_save_path'] = os.path.join(args.output_dir, 'save', 'gan.pt')
     config['bert_save_path'] = os.path.join(args.output_dir, 'save', 'bert.pt')
 
-    logger.info('n_class' + str(n_class))
+    logger.info('n_class: ' + str(n_class))
     logger.info('id_to_label: ' + str(processor.id_to_label))
 
     D = Discriminator(config)
@@ -133,8 +133,8 @@ def main(args):
         early_stopping = EarlyStopping(args.patience, logger=logger)
 
         # Loss function
-        # adversarial_loss = torch.nn.BCELoss().to(device)
-        adversarial_loss = torch.nn.CrossEntropyLoss().to(device)
+        adversarial_loss = torch.nn.BCELoss().to(device)
+        # adversarial_loss = torch.nn.CrossEntropyLoss().to(device)
         classified_loss = torch.nn.CrossEntropyLoss().to(device)
 
         # Optimizers
@@ -191,7 +191,7 @@ def main(args):
                 # print(discriminator_output)
                 # print('y')
                 # print(y)
-                real_loss = adversarial_loss(discriminator_output, (y != 0.0).long())  # chat=0 ood=0 ind=1
+                real_loss = adversarial_loss(discriminator_output, (y != 0.0).float())  # chat=0 ood=0 ind=1
                 if n_class > 2:  # 大于2表示除了训练判别器还要训练分类器 binary 只训练判别器
                     class_loss = classified_loss(classification_output, y.long())
                     real_loss += class_loss
@@ -297,8 +297,8 @@ def main(args):
         result = dict() # eval result
 
         # Loss function
-        # detection_loss = torch.nn.BCELoss().to(device)
-        detection_loss = torch.nn.CrossEntropyLoss().to(device)
+        detection_loss = torch.nn.BCELoss().to(device)
+        # detection_loss = torch.nn.CrossEntropyLoss().to(device)
         classified_loss = torch.nn.CrossEntropyLoss(ignore_index=0).to(device)
 
         G.eval()
@@ -384,8 +384,8 @@ def main(args):
         D.eval()
         E.eval()
 
-        # detection_loss = torch.nn.BCELoss().to(device)
-        detection_loss = torch.nn.CrossEntropyLoss().to(device)
+        detection_loss = torch.nn.BCELoss().to(device)
+        # detection_loss = torch.nn.CrossEntropyLoss().to(device)
         classified_loss = torch.nn.CrossEntropyLoss(ignore_index=0).to(device)
 
         all_detection_preds = []
