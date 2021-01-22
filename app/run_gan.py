@@ -597,7 +597,7 @@ if __name__ == '__main__':
     parser.add_argument('--do_test', action='store_true',
                         help='Do validation on testset step')
 
-    parser.add_argument('--do_via', action='store_true',
+    parser.add_argument('--do_vis', action='store_true',
                         help='Do validation on testset step')
 
     parser.add_argument('--gradient_accumulation_steps', default=1, type=int,
