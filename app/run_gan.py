@@ -73,6 +73,8 @@ def main(args):
         logger.info('Running in cpu.')
 
     logger.info('fake_sample_weight: ' + str(args.fake_sample_weight))
+    logger.info('train_batch_size: ' + str(args.train_batch_size))
+    logger.info('predict_batch_size: ' + str(args.predict_batch_size))
 
     # 读取bert配置, bert.ini
     logger.info('Loading config...')
