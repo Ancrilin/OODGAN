@@ -179,7 +179,6 @@ def main(args):
                 optimizer_D.zero_grad()
                 real_f_vector, discriminator_output, classification_output = D(real_feature, return_feature=True)
                 discriminator_output = discriminator_output.squeeze()
-                print((y != 0.0).float())
                 real_loss = adversarial_loss(discriminator_output, (y != 0.0).float())  # chat=0 ood=0 ind=1
                 if n_class > 2:  # 大于2表示除了训练判别器还要训练分类器 binary 只训练判别器
                     class_loss = classified_loss(classification_output, y.long())
