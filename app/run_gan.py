@@ -178,7 +178,6 @@ def main(args):
                 optimizer_D.zero_grad()
                 real_f_vector, discriminator_output, classification_output = D(real_feature, return_feature=True)
                 discriminator_output = discriminator_output.squeeze()
-                print(discriminator_output.size())
                 real_loss = adversarial_loss(discriminator_output, (y != 0.0).float())  # chat=0
                 if n_class > 2:  # 大于2表示除了训练判别器还要训练分类器 binary 只训练判别器
                     class_loss = classified_loss(classification_output, y.long())
@@ -325,6 +324,7 @@ def main(args):
         all_detection_binary_preds = tools.convert_to_int_by_threshold(all_detection_preds.squeeze())  # [length, 1]
 
         # 计算损失
+        all_detection_preds = all_detection_preds.squeeze()
         detection_loss = detection_loss(all_detection_preds, all_binary_y.float())
         result['detection_loss'] = detection_loss
 
@@ -409,6 +409,7 @@ def main(args):
         all_detection_binary_preds = tools.convert_to_int_by_threshold(all_detection_preds.squeeze())  # [length, 1]
 
         # 计算损失
+        all_detection_preds = all_detection_preds.squeeze()
         detection_loss = detection_loss(all_detection_preds, all_binary_y.float())
         result['detection_loss'] = detection_loss
 
