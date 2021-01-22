@@ -230,6 +230,7 @@ def main(args):
                     optimizer_E.step()
 
                 # train G
+                optimizer_E.zero_grad()
                 optimizer_G.zero_grad()
                 z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
                 fake_f_vector, D_decision = D.detect_only(G(z), return_feature=True)
