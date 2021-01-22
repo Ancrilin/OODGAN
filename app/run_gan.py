@@ -72,6 +72,8 @@ def main(args):
     else:
         logger.info('Running in cpu.')
 
+    logger.info('fake_sample_weight' + str(args.fake_sample_weight))
+
     # 读取bert配置, bert.ini
     logger.info('Loading config...')
     bert_config = BertConfig('config/bert.ini')
