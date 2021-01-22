@@ -225,6 +225,23 @@ def output_cases(texts, ground_truth, predicts, path, processor, logit=None):
                                  'ground_truth_is_ind', 'predict_is_ind'],
                   index=False)
 
+def save_gan_model(discriminator: torch.nn.Module, generator: torch.nn.Module, path):
+    """保存GAN模型"""
+    state_dict = {'discriminator': discriminator.state_dict(),
+                  'generator': generator.state_dict()
+                  }
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    torch.save(state_dict, path)
+    return state_dict
+
+
+def load_gan_model(discriminator: torch.nn.Module, generator: torch.nn.Module, path: str):
+    """保存加载模型"""
+    checkpoint = torch.load(path)
+    discriminator.load_state_dict(checkpoint['discriminator'])
+    generator.load_state_dict(checkpoint['generator'])
+    return discriminator, generator
+
 
 if __name__ == '__main__':
     pass
