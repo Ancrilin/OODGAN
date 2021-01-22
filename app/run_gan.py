@@ -481,9 +481,10 @@ def main(args):
         text_train_set = processor.read_dataset(data_path, ['train'])
         text_dev_set = processor.read_dataset(data_path, ['val'])
 
-        logger.info('remove ood data in train_dataset')
+
         # 去除训练集中的ood数据
         if args.remove_oodp:
+            logger.info('remove ood data in train_dataset')
             if config['dataset'] == 'smp':
                 text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']
             else:
