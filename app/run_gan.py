@@ -29,6 +29,7 @@ from model.gan import Discriminator, Generator
 import utils.tools as tools
 from sklearn.manifold import TSNE
 from utils import visualization
+import json
 
 
 # 检测设备
