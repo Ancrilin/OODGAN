@@ -130,7 +130,8 @@ def main(args):
         early_stopping = EarlyStopping(args.patience, logger=logger)
 
         # Loss function
-        adversarial_loss = torch.nn.BCELoss().to(device)
+        # adversarial_loss = torch.nn.BCELoss().to(device)
+        adversarial_loss = torch.nn.CrossEntropyLoss().to(device)
         classified_loss = torch.nn.CrossEntropyLoss().to(device)
 
         # Optimizers
@@ -183,10 +184,10 @@ def main(args):
                 optimizer_D.zero_grad()
                 real_f_vector, discriminator_output, classification_output = D(real_feature, return_feature=True)
                 discriminator_output = discriminator_output.squeeze()
-                print('discriminator_output')
-                print(discriminator_output)
-                print('y')
-                print(y)
+                # print('discriminator_output')
+                # print(discriminator_output)
+                # print('y')
+                # print(y)
                 real_loss = adversarial_loss(discriminator_output, (y != 0.0).float())  # chat=0 ood=0 ind=1
                 if n_class > 2:  # 大于2表示除了训练判别器还要训练分类器 binary 只训练判别器
                     class_loss = classified_loss(classification_output, y.long())
@@ -293,7 +294,8 @@ def main(args):
         result = dict() # eval result
 
         # Loss function
-        detection_loss = torch.nn.BCELoss().to(device)
+        # detection_loss = torch.nn.BCELoss().to(device)
+        detection_loss = torch.nn.CrossEntropyLoss().to(device)
         classified_loss = torch.nn.CrossEntropyLoss(ignore_index=0).to(device)
 
         G.eval()
@@ -379,7 +381,8 @@ def main(args):
         D.eval()
         E.eval()
 
-        detection_loss = torch.nn.BCELoss().to(device)
+        # detection_loss = torch.nn.BCELoss().to(device)
+        detection_loss = torch.nn.CrossEntropyLoss().to(device)
         classified_loss = torch.nn.CrossEntropyLoss(ignore_index=0).to(device)
 
         all_detection_preds = []
