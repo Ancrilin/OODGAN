@@ -104,6 +104,26 @@ def main(args):
 
     logger.info('n_class: ' + str(n_class))
     logger.info('id_to_label: ' + str(processor.id_to_label))
+    logger.info('label_to_id: ' + str(processor.label_to_id))
+
+    with open(data_path, 'r', encoding='utf-8') as fp:
+        source = json.load(fp)
+        for type in source:
+            n = 0
+            n_id = 0
+            n_ood = 0
+            text_len = {}
+            for line in source[type]:
+                if line['domain'] == 'chat':
+                    n_ood += 1
+                else:
+                    n_id += 1
+                n += 1
+                text_len[len(line['text'])] = text_len.get(len(line['text']), 0) + 1
+            print(type, n)
+            print('ood', n_ood)
+            print('id', n_id)
+            print(sorted(text_len.items(), key=lambda d: d[0], reverse=False))
 
     D = Discriminator(config)
     G = Generator(config)
