@@ -94,8 +94,9 @@ def main(args):
     n_class = len(processor.id_to_label)
     # config = vars(args)  # 返回参数字典
     config = args.__dict__
-    config['model_save_path'] = os.path.join(args.output_dir, 'save', 'bert.pt')
     config['n_class'] = n_class
+    config['gan_save_path'] = os.path.join(args.output_dir, 'save', 'gan.pt')
+    config['bert_save_path'] = os.path.join(args.output_dir, 'save', 'bert.pt')
 
     D = Discriminator(config)
     G = Generator(config)
