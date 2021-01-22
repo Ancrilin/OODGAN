@@ -343,7 +343,7 @@ def main(args):
         ind_class_acc = metrics.ind_class_accuracy(all_detection_binary_preds, all_y)
         fpr95 = ErrorRateAt95Recall(all_detection_binary_preds, y_score)
 
-        report = metrics.binary_classification_report(all_y, all_detection_preds)
+        report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
 
         result['eer'] = eer
         result['ind_class_acc'] = ind_class_acc
@@ -427,7 +427,7 @@ def main(args):
         ind_class_acc = metrics.ind_class_accuracy(all_detection_binary_preds, all_y)
         fpr95 = ErrorRateAt95Recall(all_detection_binary_preds, y_score)
 
-        report = metrics.binary_classification_report(all_y, all_detection_preds)
+        report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
 
         result['eer'] = eer
         result['ind_class_acc'] = ind_class_acc
