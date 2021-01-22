@@ -534,7 +534,7 @@ def main(args):
                      os.path.join(args.output_dir, 'test_cases.csv'), processor, test_result['all_detection_preds'])
 
         # confusion matrix
-        metrics.plot_confusion_matrix(test_result['all_y'], test_result['all_pred'],
+        metrics.plot_confusion_matrix(test_result['all_y'], test_result['all_detection_preds'],
                               args.output_dir)
 
     if args.do_vis:
