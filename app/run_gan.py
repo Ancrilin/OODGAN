@@ -190,6 +190,8 @@ def main(args):
                 z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
                 fake_feature = G(z).detach()
                 fake_discriminator_output = D.detect_only(fake_feature)
+                print(fake_discriminator_output.size())
+                print(fake_label.size())
                 fake_loss = args.fake_sample_weight * adversarial_loss(fake_discriminator_output, fake_label)
                 fake_loss.backward()
                 optimizer_D.step()
