@@ -172,6 +172,7 @@ def main(args):
         valid_oos_ind_recall = []
         valid_oos_ind_f_score = []
         valid_ind_class_acc = []
+        valid_oos_ind_precision = []
 
         iteration = 0
 
@@ -231,7 +232,6 @@ def main(args):
                     optimizer_E.step()
 
                 # train G
-                optimizer_E.zero_grad()
                 optimizer_G.zero_grad()
                 z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
                 fake_f_vector, D_decision = D.detect_only(G(z), return_feature=True)
@@ -269,14 +269,14 @@ def main(args):
                 eval_result = eval(dev_dataset)
 
                 valid_detection_loss.append(eval_result['detection_loss'])
+                valid_oos_ind_precision.append(eval_result['oos_ind_precision'])
                 valid_oos_ind_recall.append(eval_result['oos_ind_recall'])
                 valid_oos_ind_f_score.append(eval_result['oos_ind_f_score'])
-                valid_ind_class_acc.append(eval_result['ind_class_acc'])
 
                 # 1 表示要保存模型
                 # 0 表示不需要保存模型
                 # -1 表示不需要模型，且超过了patience，需要early stop
-                signal = early_stopping(eval_result['accuracy'])
+                signal = early_stopping(-eval_result['eer'])
                 if signal == -1:
                     break
                 elif signal == 0:
