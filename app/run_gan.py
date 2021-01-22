@@ -179,6 +179,7 @@ def main(args):
                 optimizer_D.zero_grad()
                 real_f_vector, discriminator_output, classification_output = D(real_feature, return_feature=True)
                 discriminator_output = discriminator_output.squeeze()
+                print(np.shape(y))
                 real_loss = adversarial_loss(discriminator_output, (y != 0.0).float())  # chat=0
                 if n_class > 2:  # 大于2表示除了训练判别器还要训练分类器 binary 只训练判别器
                     class_loss = classified_loss(classification_output, y.long())
@@ -190,8 +191,6 @@ def main(args):
                 z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
                 fake_feature = G(z).detach()
                 fake_discriminator_output = D.detect_only(fake_feature)
-                print(fake_discriminator_output.size())
-                print(fake_label.size())
                 fake_loss = args.fake_sample_weight * adversarial_loss(fake_discriminator_output, fake_label)
                 fake_loss.backward()
                 optimizer_D.step()
