@@ -229,22 +229,22 @@ def main(args):
                 if args.fine_tune:
                     optimizer_E.step()
 
-                    # train G
-                    optimizer_G.zero_grad()
-                    z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
-                    fake_f_vector, D_decision = D.detect_only(G(z), return_feature=True)
-                    gd_loss = adversarial_loss(D_decision, true_label)
-                    fm_loss = torch.abs(torch.mean(real_f_vector.detach(), 0) - torch.mean(fake_f_vector, 0)).mean()
-                    g_loss = gd_loss + 0 * fm_loss  # 简单除去FM项损失
-                    g_loss.backward()
-                    optimizer_G.step()
+                # train G
+                optimizer_G.zero_grad()
+                z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
+                fake_f_vector, D_decision = D.detect_only(G(z), return_feature=True)
+                gd_loss = adversarial_loss(D_decision, true_label)
+                fm_loss = torch.abs(torch.mean(real_f_vector.detach(), 0) - torch.mean(fake_f_vector, 0)).mean()
+                g_loss = gd_loss + 0 * fm_loss  # 简单除去FM项损失
+                g_loss.backward()
+                optimizer_G.step()
 
-                    global_step += 1
+                global_step += 1
 
-                    D_fake_loss += fake_loss.detach()
-                    D_real_loss += real_loss.detach()
-                    G_train_loss += g_loss.detach() + fm_loss.detach()
-                    FM_train_loss += fm_loss.detach()
+                D_fake_loss += fake_loss.detach()
+                D_real_loss += real_loss.detach()
+                G_train_loss += g_loss.detach() + fm_loss.detach()
+                FM_train_loss += fm_loss.detach()
 
             logger.info('[Epoch {}] Train: D_fake_loss: {}'.format(i, D_fake_loss / n_sample))
             logger.info('[Epoch {}] Train: D_real_loss: {}'.format(i, D_real_loss / n_sample))
