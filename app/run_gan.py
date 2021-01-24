@@ -353,7 +353,7 @@ def main(args):
                     f_vector, discriminator_output = D.detect_only(real_feature, return_feature=True)
                     all_detection_preds.append(discriminator_output)
 
-        all_y = LongTensor(dataset.dataset[:, -1].astype(int)).cpu()  # [length, n_class] 原始真实label
+        all_y = LongTensor(dataset.dataset[:, -1].astype(int)).cpu()  # [length, n_class]
         all_binary_y = (all_y != 0).long()  # [length, 1] label 0 is oos    二分类ood， ind 真实label
 
         all_detection_preds = torch.cat(all_detection_preds, 0).cpu()  # [length, 1]
@@ -377,7 +377,7 @@ def main(args):
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
             all_detection_binary_preds, all_y)
         ind_class_acc = metrics.ind_class_accuracy(all_detection_binary_preds, all_y)
-        fpr95 = ErrorRateAt95Recall(all_detection_binary_preds, y_score)
+        fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
 
         report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
 
@@ -392,7 +392,7 @@ def main(args):
         result['auc'] = roc_auc_score(all_binary_y, y_score)
         result['fpr95'] = fpr95
         result['report'] = report
-        result['accuracy'] = metrics.binary_accuracy(all_binary_y, all_detection_binary_preds)
+        result['accuracy'] = metrics.binary_accuracy(all_detection_binary_preds, all_binary_y)
 
         return result
 
@@ -462,7 +462,7 @@ def main(args):
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
             all_detection_binary_preds, all_y)
         ind_class_acc = metrics.ind_class_accuracy(all_detection_binary_preds, all_y)
-        fpr95 = ErrorRateAt95Recall(all_detection_binary_preds, y_score)
+        fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
 
         report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
 
