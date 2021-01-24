@@ -73,6 +73,8 @@ def main(args):
     else:
         logger.info('Running in cpu.')
 
+    logger.info('device: ' + device)
+
     logger.info('fake_sample_weight: ' + str(args.fake_sample_weight))
     logger.info('train_batch_size: ' + str(args.train_batch_size))
     logger.info('predict_batch_size: ' + str(args.predict_batch_size))
@@ -126,6 +128,8 @@ def main(args):
             print('id', n_id)
             print(sorted(text_len.items(), key=lambda d: d[0], reverse=False))
 
+    logger.info('BertPreTrainModelDir: ' + bert_config['PreTrainModelDir'])
+
     D = Discriminator(config)
     G = Generator(config)
     E = BertModel.from_pretrained(bert_config['PreTrainModelDir'])  # Bert encoder
@@ -146,6 +150,9 @@ def main(args):
     global_step = 0
 
     def train(train_dataset, dev_dataset):
+        logger.info('-------------------------------------------------')
+        logger.info('training...')
+        logger.info('Loading train_dataloader...')
         train_dataloader = DataLoader(train_dataset,
                                       batch_size=args.train_batch_size,
                                       shuffle=True,
@@ -158,6 +165,9 @@ def main(args):
         # adversarial_loss = torch.nn.CrossEntropyLoss().to(device)
         classified_loss = torch.nn.CrossEntropyLoss().to(device)
 
+        logger.info('G_lr: ' + str(args.G_lr))
+        logger.info('D_lr: ' + str(args.D_lr))
+        logger.info('bert_lr: ' + str(args.bert_lr))
         # Optimizers
         optimizer_G = torch.optim.Adam(G.parameters(), lr=args.G_lr)  # optimizer for generator
         optimizer_D = torch.optim.Adam(D.parameters(), lr=args.D_lr)  # optimizer for discriminator
@@ -179,10 +189,10 @@ def main(args):
         nonlocal global_step
         for i in range(args.n_epoch):
 
+            # Initialize model state
             G.train()
             D.train()
             E.train()
-            total_loss = 0
 
             G_train_loss = 0
             D_fake_loss = 0
@@ -209,10 +219,6 @@ def main(args):
                 optimizer_D.zero_grad()
                 real_f_vector, discriminator_output, classification_output = D(real_feature, return_feature=True)
                 discriminator_output = discriminator_output.squeeze()
-                # print('discriminator_output')
-                # print(discriminator_output)
-                # print('y')
-                # print(y)
                 real_loss = adversarial_loss(discriminator_output, (y != 0.0).float())  # chat=0 ood=0 ind=1
                 if n_class > 2:  # 大于2表示除了训练判别器还要训练分类器 binary 只训练判别器
                     class_loss = classified_loss(classification_output, y.long())
@@ -314,6 +320,9 @@ def main(args):
                 save_model(E, path=config['bert_save_path'], model_name='bert')
 
     def eval(dataset):
+        logger.info('-------------------------------------------------')
+        logger.info('evaluating...')
+        logger.info('Loading eval_dataloader...')
         dev_dataloader = DataLoader(dataset, batch_size=args.predict_batch_size, shuffle=False, num_workers=2)
         n_sample = len(dev_dataloader)
         result = dict() # eval result
@@ -520,10 +529,7 @@ def main(args):
         # 去除训练集中的ood数据
         if args.remove_oodp:
             logger.info('remove ood data in train_dataset')
-            if config['dataset'] == 'smp':
-                text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']
-            else:
-                text_train_set = [sample for sample in text_train_set if sample[-1] != 'oos']
+            text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']    # chat is ood data
 
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]
