@@ -3,7 +3,7 @@
 seeds="16 123 256 512 1024 1536 2048 4096 8192"
 
 for seed in ${seeds} ; do
-  python -m app.run_base_gan \
+  python -m app.run_gan \
   --seed=${seed}  \
   --fine_tune \
   --n_epoch=500  \
