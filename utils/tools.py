@@ -245,15 +245,15 @@ def load_gan_model(discriminator: torch.nn.Module, generator: torch.nn.Module, p
     return discriminator, generator
 
 def removeDir(dirPath):
-    if not os.isdir(dirPath):
+    if not os.path.isdir(dirPath):
         return
     files = os.listdir(dirPath)
     try:
         for f in files:
-            filePath = os.join(dirPath, f)
-            if os.isfile(filePath):
+            filePath = os.path.join(dirPath, f)
+            if os.path.isfile(filePath):
                 os.remove(filePath)
-            elif os.isdir(filePath):
+            elif os.path.isdir(filePath):
                 removeDir(filePath)
         os.rmdir(dirPath)
     except Exception as e:
