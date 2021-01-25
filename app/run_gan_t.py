@@ -394,8 +394,10 @@ def main(args):
         y_score = all_detection_preds.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
         fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
+        ind_class_acc = metrics.ind_class_accuracy(all_detection_binary_preds, all_y)
 
         result['eer'] = eer
+        result['ind_class_acc'] = ind_class_acc
         result['all_detection_binary_preds'] = all_detection_binary_preds
         result['detection_acc'] = detection_acc
         result['all_binary_y'] = all_binary_y
