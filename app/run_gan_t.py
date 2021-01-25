@@ -395,6 +395,7 @@ def main(args):
         eer = metrics.cal_eer(all_binary_y, y_score)
         fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
         ind_class_acc = metrics.ind_class_accuracy(all_detection_binary_preds, all_y)
+        report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
 
         result['eer'] = eer
         result['ind_class_acc'] = ind_class_acc
@@ -408,6 +409,7 @@ def main(args):
         result['auc'] = roc_auc_score(all_binary_y, y_score)
         result['fpr95'] = fpr95
         result['accuracy'] = metrics.binary_accuracy(all_detection_binary_preds, all_binary_y)
+        result['report'] = report
 
         return result
 
