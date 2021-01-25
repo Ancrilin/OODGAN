@@ -300,8 +300,7 @@ def main(args):
                 logger.info('valid_auc: {}'.format(eval_result['auc']))
                 logger.info('valid_fpr95: {}'.format(eval_result['fpr95']))
                 logger.info('valid_accuracy: {}'.format(eval_result['accuracy']))
-                logger.info('report')
-                logger.info(eval_result['report'])
+                logger.info('\n' + eval_result['report'])
 
         from utils.visualization import draw_curve
         draw_curve(D_total_fake_loss, iteration, 'D_total_fake_loss', args.output_dir)
@@ -557,8 +556,7 @@ def main(args):
         logger.info('eval_auc: {}'.format(eval_result['auc']))
         logger.info('eval_fpr95: {}'.format(eval_result['fpr95']))
         logger.info('eval_accuracy: {}'.format(eval_result['accuracy']))
-        logger.info('report')
-        logger.info(eval_result['report'])
+        logger.info('\n' + eval_result['report'])
 
     if args.do_test:
         text_test_set = processor.read_dataset(data_path, ['test'])
@@ -574,8 +572,7 @@ def main(args):
         logger.info('test_auc: {}'.format(test_result['auc']))
         logger.info('test_fpr95: {}'.format(test_result['fpr95']))
         logger.info('test_accuracy: {}'.format(test_result['accuracy']))
-        logger.info('report')
-        logger.info(test_result['report'])
+        logger.info('\n' + test_result['report'])
 
         save_result(test_result, os.path.join(args.output_dir, 'test_result'))
 
