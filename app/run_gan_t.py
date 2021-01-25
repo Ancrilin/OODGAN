@@ -536,7 +536,7 @@ def main(args):
 
         # 去除训练集中的ood数据
         if args.remove_oodp:
-            logger.info('remove ood data in train_dataset')
+            logger.info('remove ood data in train_dataset...')
             text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']    # chat is ood data
 
         # 文本转换为ids
@@ -665,10 +665,10 @@ if __name__ == '__main__':
     parser.add_argument('--gradient_accumulation_steps', default=1, type=int,
                         help='Number of updates steps to accumulate before performing a backward/update pass')
 
-    parser.add_argument('--train_batch_size', default=32, type=int,
+    parser.add_argument('--train_batch_size', default=64, type=int,
                         help='Batch size for training.')
 
-    parser.add_argument('--predict_batch_size', default=16, type=int,
+    parser.add_argument('--predict_batch_size', default=32, type=int,
                         help='Batch size for evaluating and testing.')
 
     parser.add_argument('--patience', default=10, type=int,
