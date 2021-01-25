@@ -244,6 +244,21 @@ def load_gan_model(discriminator: torch.nn.Module, generator: torch.nn.Module, p
     generator.load_state_dict(checkpoint['generator'])
     return discriminator, generator
 
+def removeDir(dirPath):
+    if not os.isdir(dirPath):
+        return
+    files = os.listdir(dirPath)
+    try:
+        for f in files:
+            filePath = os.join(dirPath, f)
+            if os.isfile(filePath):
+                os.remove(filePath)
+            elif os.isdir(filePath):
+                removeDir(filePath)
+        os.rmdir(dirPath)
+    except Exception as e:
+        print(e)
+
 
 if __name__ == '__main__':
     pass

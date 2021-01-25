@@ -694,4 +694,4 @@ if __name__ == '__main__':
     main(args)
     if not args.save_model:
         logger.info('Delete model...')
-        os.removedirs(os.path.join(args.output_dir, 'save',))
+        tools.removeDir(os.path.join(args.output_dir, 'save',))
