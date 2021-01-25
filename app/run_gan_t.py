@@ -177,6 +177,7 @@ def main(args):
         valid_oos_ind_precision = []
         valid_oos_ind_recall = []
         valid_oos_ind_f_score = []
+        valid_ind_class_acc = []
 
         all_features = []
         result = dict()
