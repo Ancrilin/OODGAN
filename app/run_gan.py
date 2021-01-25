@@ -312,7 +312,7 @@ def main(args):
 
         if dev_dataset:
             draw_curve(valid_detection_loss, iteration, 'valid_detection_loss', args.output_dir)
-            draw_curve(valid_ind_class_acc, iteration, 'valid_ind_class_accuracy', args.output_dir)
+            # draw_curve(valid_ind_class_acc, iteration, 'valid_ind_class_accuracy', args.output_dir)
 
         if args.patience >= args.n_epoch:
             tools.save_gan_model(D, G, config['gan_save_path'])

@@ -316,7 +316,7 @@ def main(args):
         draw_curve(FM_total_train_loss, iteration, 'FM_total_train_loss', args.output_dir)
         if dev_dataset:
             draw_curve(valid_detection_loss, iteration, 'valid_detection_loss', args.output_dir)
-            draw_curve(valid_ind_class_acc, iteration, 'valid_ind_class_accuracy', args.output_dir)
+            # draw_curve(valid_ind_class_acc, iteration, 'valid_ind_class_accuracy', args.output_dir)
 
         best_dev = -early_stopping.best_score
 
@@ -330,16 +330,12 @@ def main(args):
         return result
 
     def eval(dataset):
-        logger.info('-------------------------------------------------')
-        logger.info('evaluating...')
-        logger.info('Loading eval_dataloader...')
         dev_dataloader = DataLoader(dataset, batch_size=args.predict_batch_size, shuffle=False, num_workers=2)
         n_sample = len(dev_dataloader)
-        result = dict() # eval result
+        result = dict()
 
         # Loss function
         detection_loss = torch.nn.BCELoss().to(device)
-        # detection_loss = torch.nn.CrossEntropyLoss().to(device)
         classified_loss = torch.nn.CrossEntropyLoss(ignore_index=0).to(device)
 
         G.eval()
@@ -373,14 +369,12 @@ def main(args):
                     all_detection_preds.append(discriminator_output)
 
         all_y = LongTensor(dataset.dataset[:, -1].astype(int)).cpu()  # [length, n_class]
-        all_binary_y = (all_y != 0).long()  # [length, 1] label 0 is oos    二分类ood， ind 真实label
-
+        all_binary_y = (all_y != 0).long()  # [length, 1] label 0 is oos
         all_detection_preds = torch.cat(all_detection_preds, 0).cpu()  # [length, 1]
         all_detection_binary_preds = tools.convert_to_int_by_threshold(all_detection_preds.squeeze())  # [length, 1]
 
         # 计算损失
-        all_detection_preds = all_detection_preds.squeeze()
-        detection_loss = detection_loss(all_detection_preds, all_binary_y.float())
+        detection_loss = detection_loss(all_detection_preds.squeeze(), all_binary_y.float())
         result['detection_loss'] = detection_loss
 
         if n_class > 2:
@@ -390,27 +384,27 @@ def main(args):
             class_acc = metrics.ind_class_accuracy(all_class_preds, all_y, oos_index=0)  # accuracy for ind class
             logger.info(metrics.classification_report(all_y, all_class_preds, target_names=processor.id_to_label))
 
+        # logger.info(metrics.classification_report(all_binary_y, all_detection_binary_preds, target_names=['oos', 'in']))
+
+        # report
+        oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(all_detection_binary_preds,
+                                                                                            all_binary_y)
+        detection_acc = metrics.accuracy(all_detection_binary_preds, all_binary_y)
 
         y_score = all_detection_preds.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
-        oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
-            all_detection_binary_preds, all_y)
-        ind_class_acc = metrics.ind_class_accuracy(all_detection_binary_preds, all_y)
         fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
 
-        report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
-
         result['eer'] = eer
-        result['ind_class_acc'] = ind_class_acc
-        result['loss'] = detection_loss / n_sample # avg loss
-        result['y_score'] = y_score
+        result['all_detection_binary_preds'] = all_detection_binary_preds
+        result['detection_acc'] = detection_acc
         result['all_binary_y'] = all_binary_y
         result['oos_ind_precision'] = oos_ind_precision
         result['oos_ind_recall'] = oos_ind_recall
         result['oos_ind_f_score'] = oos_ind_fscore
+        result['y_score'] = y_score
         result['auc'] = roc_auc_score(all_binary_y, y_score)
         result['fpr95'] = fpr95
-        result['report'] = report
         result['accuracy'] = metrics.binary_accuracy(all_detection_binary_preds, all_binary_y)
 
         return result
