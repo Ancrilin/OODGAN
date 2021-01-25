@@ -678,6 +678,9 @@ if __name__ == '__main__':
 
     parser.add_argument('--fake_sample_weight', type=float, default=1.0, help="Weight of fake sample loss for Discriminator.")
 
+    parser.add_argument('--save_model', action='store_true', default=False,
+                        help='Whether to save model.')
+
     # 解析参数
     args = parser.parse_args()
 
@@ -689,3 +692,6 @@ if __name__ == '__main__':
     logger = Logger(os.path.join(args.output_dir, 'train.log'))
     logger.info(os.getcwd())
     main(args)
+    if not args.save_model:
+        logger.info('Delete model...')
+        os.removedirs(os.path.join(args.output_dir, 'save',))
