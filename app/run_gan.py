@@ -533,6 +533,7 @@ def main(args):
             logger.info('remove entity in train_dataset')
             entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
             text_train_set = entity_processor.remove_smp_entity(text_train_set)
+            print(text_train_set[:200])
 
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]
