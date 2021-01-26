@@ -524,7 +524,6 @@ def main(args):
         text_train_set = processor.read_dataset(data_path, ['train'])
         text_dev_set = processor.read_dataset(data_path, ['val'])
 
-
         # 去除训练集中的ood数据
         if args.remove_oodp:
             logger.info('remove ood data in train_dataset')
@@ -533,6 +532,7 @@ def main(args):
         if args.remove_entity:
             logger.info('remove entity in train_dataset')
             entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
+            print(text_train_set[0])
             text_train_set = [entity_processor.remove_entity(sample['text']) for sample in text_train_set]
 
         # 文本转换为ids
