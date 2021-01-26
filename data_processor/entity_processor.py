@@ -37,7 +37,7 @@ class EntityProcessor:
         return text
 
     def compile(self):
-        for line in data:
+        for line in self.data:
             self.compiled.append(re.compile(line))
 
     def remove_smp_entity(self, dataset):
