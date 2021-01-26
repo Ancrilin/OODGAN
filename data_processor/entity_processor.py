@@ -39,6 +39,11 @@ class EntityProcessor:
         for line in data:
             self.compiled.append(re.compile(line))
 
+    def remove_smp_entity(self, dataset):
+        for line in dataset:
+            line['text'] = self.remove_entity(line['text'])
+        return dataset
+
 
 if __name__ == '__main__':
     filepath = '../data/smp/训练集 全知识标记.xlsx'
@@ -56,4 +61,8 @@ if __name__ == '__main__':
     m2 = re.sub(r2, '', text1)
     print(m2)
     print(entityProcessor.remove_entity('打开qq 不加 平方 上 应用 十八'))
+    dataset = [{'text': '123'}]
+    for line in dataset:
+        line['text'] = '456'
+    print(dataset)
 
