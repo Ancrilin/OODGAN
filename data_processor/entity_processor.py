@@ -17,6 +17,7 @@ class EntityProcessor:
     def __init__(self, filepath):
         self.data = self.load_entity(filepath)
         self.compiled = []
+        self.compile()
 
     def load_entity(self, filepath):
         df = pd.read_excel(filepath)
