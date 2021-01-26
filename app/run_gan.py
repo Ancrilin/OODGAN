@@ -30,7 +30,7 @@ import utils.tools as tools
 from sklearn.manifold import TSNE
 from utils import visualization
 import json
-
+from data_processor.entity_processor import EntityProcessor
 
 # 检测设备
 if torch.cuda.is_available():
@@ -529,6 +529,11 @@ def main(args):
         if args.remove_oodp:
             logger.info('remove ood data in train_dataset')
             text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']    # chat is ood data
+        # 挖去实体词汇
+        if args.remove_entity:
+            logger.info('remove entity in train_dataset')
+            entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
+            text_train_set = [entity_processor.remove_entity(sample['text']) for sample in text_train_set]
 
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]
@@ -668,6 +673,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--remove_oodp', action='store_true', default=False,
                         help='Whether to remove ood data.')
+    parser.add_argument('--remove_entity', action='store_true', default=False,
+                        help='Whether to remove entity in data.')
 
     parser.add_argument('--n_epoch', default=500, type=int,
                         help='Number of epoch for training.')
