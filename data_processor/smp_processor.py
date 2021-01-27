@@ -74,6 +74,35 @@ class SMP_Processor(BertProcessor):
         """
         return self.label_to_id[label]
 
+    def remove_minlen(self, dataset, minlen):
+        n_dataset = []
+        for i, line in enumerate(dataset):
+            if len(line['text']) >= minlen:
+                n_dataset.append(line)
+        return n_dataset
+
+    def remove_maxlen(self, dataset, maxlen):
+        n_dataset = []
+        for i, line in enumerate(dataset):
+            if len(line['text']) <= maxlen:
+                n_dataset.append(line)
+        return n_dataset
+
+    def weight_minlen(self, dataset, minlen):
+        n_dataset = []
+        for i, line in enumerate(dataset):
+            if len(line['text']) >= minlen:
+                n_dataset.append(line)
+        return n_dataset
+
+    def weight_maxlen(self, dataset, maxlen):
+        n_dataset = []
+        for i, line in enumerate(dataset):
+            if len(line['text']) <= maxlen:
+                n_dataset.append(line)
+        return n_dataset
+
+
 if __name__ == '__main__':
     from config import BertConfig
     os.chdir('..')

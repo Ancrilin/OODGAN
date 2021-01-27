@@ -531,9 +531,35 @@ def main(args):
         # 挖去实体词汇
         if args.remove_entity:
             logger.info('remove entity in train_dataset')
+            previous_len = len(text_train_set)
+            logger.info('previous len: ' + str(previous_len))
             entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
             text_train_set = entity_processor.remove_smp_entity(text_train_set)
-            print(text_train_set[:200])
+            removed_len = len(text_train_set)
+            logger.info('removed len: ' + str(removed_len))
+            logger.info('the number of removed data: ' + str(previous_len - removed_len))
+
+        if args.minlen != -1:
+            logger.info('remove minlen data')
+            previous_len = len(text_train_set)
+            logger.info('previous len: ' + str(previous_len))
+            text_train_set = SMP_Processor.remove_minlen(dataset=text_train_set, minlen=args.minlen)
+            removed_len = len(text_train_set)
+            logger.info('removed len: ' + str(removed_len))
+            logger.info('the number of removed data: ' + str(previous_len - removed_len))
+
+        if args.minlen != -1:
+            logger.info('remove minlen data')
+            previous_len = len(text_train_set)
+            logger.info('previous len: ' + str(previous_len))
+            text_train_set = processor.remove_minlen(text_train_set, minlen=args.minlen)
+            removed_len = len(text_train_set)
+            logger.info('removed len: ' + str(removed_len))
+            logger.info('the number of removed data: ' + str(previous_len - removed_len))
+
+        if args.maxlen != -1:
+            logger.info('remove maxlen data')
+            text_train_set = processor.remove_maxlen(text_train_set, maxlen=args.maxlen)
 
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]
@@ -675,6 +701,11 @@ if __name__ == '__main__':
                         help='Whether to remove ood data.')
     parser.add_argument('--remove_entity', action='store_true', default=False,
                         help='Whether to remove entity in data.')
+
+    parser.add_argument('--minlen', default=-1, type=int,
+                        help='minlen')
+    parser.add_argument('--maxlen', default=-1, type=int,
+                        help='maxlen')
 
     parser.add_argument('--n_epoch', default=500, type=int,
                         help='Number of epoch for training.')
