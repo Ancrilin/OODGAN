@@ -528,17 +528,14 @@ def main(args):
         if args.remove_oodp:
             logger.info('remove ood data in train_dataset')
             text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']    # chat is ood data
+
         # 挖去实体词汇
         if args.remove_entity:
             logger.info('remove entity in train_dataset')
-            previous_len = len(text_train_set)
-            logger.info('previous len: ' + str(previous_len))
             entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
             logger.info(entity_processor.compiled)
-            text_train_set = entity_processor.remove_smp_entity(text_train_set)
-            removed_len = len(text_train_set)
-            logger.info('removed len: ' + str(removed_len))
-            logger.info('the number of removed data: ' + str(previous_len - removed_len))
+            text_train_set, num = entity_processor.remove_smp_entity(text_train_set)
+            logger.info('the number of solved entity data: ' + str(num))
 
         if args.minlen != -1:
             logger.info('remove minlen data')
@@ -547,7 +544,7 @@ def main(args):
             text_train_set = processor.remove_minlen(dataset=text_train_set, minlen=args.minlen)
             removed_len = len(text_train_set)
             logger.info('removed len: ' + str(removed_len))
-            logger.info('the number of removed data: ' + str(previous_len - removed_len))
+            logger.info('the number of removed minlen data: ' + str(previous_len - removed_len))
 
         if args.maxlen != -1:
             logger.info('remove maxlen data')
@@ -556,7 +553,7 @@ def main(args):
             text_train_set = processor.remove_maxlen(text_train_set, maxlen=args.maxlen)
             removed_len = len(text_train_set)
             logger.info('removed len: ' + str(removed_len))
-            logger.info('the number of removed data: ' + str(previous_len - removed_len))
+            logger.info('the number of removed maxlen data: ' + str(previous_len - removed_len))
 
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]

@@ -41,9 +41,14 @@ class EntityProcessor:
             self.compiled.append(re.compile(line))
 
     def remove_smp_entity(self, dataset):
+        num = 0
         for line in dataset:
+            previous_len = line['text']
             line['text'] = self.remove_entity(line['text'])
-        return dataset
+            solved_len = line['text']
+            if previous_len > solved_len:
+                num += 1
+        return dataset, num
 
 
 if __name__ == '__main__':
