@@ -534,6 +534,7 @@ def main(args):
             previous_len = len(text_train_set)
             logger.info('previous len: ' + str(previous_len))
             entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
+            logger.info(entity_processor.compiled)
             text_train_set = entity_processor.remove_smp_entity(text_train_set)
             removed_len = len(text_train_set)
             logger.info('removed len: ' + str(removed_len))
