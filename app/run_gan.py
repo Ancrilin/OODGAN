@@ -543,23 +543,19 @@ def main(args):
             logger.info('remove minlen data')
             previous_len = len(text_train_set)
             logger.info('previous len: ' + str(previous_len))
-            text_train_set = SMP_Processor.remove_minlen(dataset=text_train_set, minlen=args.minlen)
-            removed_len = len(text_train_set)
-            logger.info('removed len: ' + str(removed_len))
-            logger.info('the number of removed data: ' + str(previous_len - removed_len))
-
-        if args.minlen != -1:
-            logger.info('remove minlen data')
-            previous_len = len(text_train_set)
-            logger.info('previous len: ' + str(previous_len))
-            text_train_set = processor.remove_minlen(text_train_set, minlen=args.minlen)
+            text_train_set = processor.remove_minlen(dataset=text_train_set, minlen=args.minlen)
             removed_len = len(text_train_set)
             logger.info('removed len: ' + str(removed_len))
             logger.info('the number of removed data: ' + str(previous_len - removed_len))
 
         if args.maxlen != -1:
             logger.info('remove maxlen data')
+            previous_len = len(text_train_set)
+            logger.info('previous len: ' + str(previous_len))
             text_train_set = processor.remove_maxlen(text_train_set, maxlen=args.maxlen)
+            removed_len = len(text_train_set)
+            logger.info('removed len: ' + str(removed_len))
+            logger.info('the number of removed data: ' + str(previous_len - removed_len))
 
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]
@@ -699,6 +695,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--remove_oodp', action='store_true', default=False,
                         help='Whether to remove ood data.')
+
     parser.add_argument('--remove_entity', action='store_true', default=False,
                         help='Whether to remove entity in data.')
 
