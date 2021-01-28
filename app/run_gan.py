@@ -23,7 +23,7 @@ from utils.tools import check_manual_seed
 from config import BertConfig, Config
 from data_processor.smp_processor import SMP_Processor
 from data_utils.dataset import MyDataset
-from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_gan_model, load_gan_model, save_result, save_model, output_cases, save_feature
+from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_gan_model, load_gan_model, save_result, save_model, output_cases, save_feature, std_mean
 import utils.metrics as metrics
 from model.gan import Discriminator, Generator
 import utils.tools as tools
@@ -51,6 +51,7 @@ def check_args(args):
     if args.gradient_accumulation_steps < 1 or args.train_batch_size % args.gradient_accumulation_steps != 0:
         raise argparse.ArgumentError('Gradient_accumulation_steps should >=1 and train_batch_size%gradient_accumulation_steps == 0')
 
+gross_result = {}
 
 def main(args):
     """
@@ -109,24 +110,25 @@ def main(args):
     logger.info('id_to_label: ' + str(processor.id_to_label))
     logger.info('label_to_id: ' + str(processor.label_to_id))
 
-    with open(data_path, 'r', encoding='utf-8') as fp:
-        source = json.load(fp)
-        for type in source:
-            n = 0
-            n_id = 0
-            n_ood = 0
-            text_len = {}
-            for line in source[type]:
-                if line['domain'] == 'chat':
-                    n_ood += 1
-                else:
-                    n_id += 1
-                n += 1
-                text_len[len(line['text'])] = text_len.get(len(line['text']), 0) + 1
-            print(type, n)
-            print('ood', n_ood)
-            print('id', n_id)
-            print(sorted(text_len.items(), key=lambda d: d[0], reverse=False))
+    # 输出数据集分布
+    # with open(data_path, 'r', encoding='utf-8') as fp:
+    #     source = json.load(fp)
+    #     for type in source:
+    #         n = 0
+    #         n_id = 0
+    #         n_ood = 0
+    #         text_len = {}
+    #         for line in source[type]:
+    #             if line['domain'] == 'chat':
+    #                 n_ood += 1
+    #             else:
+    #                 n_id += 1
+    #             n += 1
+    #             text_len[len(line['text'])] = text_len.get(len(line['text']), 0) + 1
+    #         print(type, n)
+    #         print('ood', n_ood)
+    #         print('id', n_id)
+    #         print(sorted(text_len.items(), key=lambda d: d[0], reverse=False))
 
     logger.info('BertPreTrainModelDir: ' + bert_config['PreTrainModelDir'])
 
@@ -254,12 +256,12 @@ def main(args):
                 G_train_loss += g_loss.detach() + fm_loss.detach()
                 FM_train_loss += fm_loss.detach()
 
-            logger.info('[Epoch {}] Train: D_fake_loss: {}'.format(i, D_fake_loss / n_sample))
-            logger.info('[Epoch {}] Train: D_real_loss: {}'.format(i, D_real_loss / n_sample))
-            logger.info('[Epoch {}] Train: D_class_loss: {}'.format(i, D_class_loss / n_sample))
-            logger.info('[Epoch {}] Train: G_train_loss: {}'.format(i, G_train_loss / n_sample))
-            logger.info('[Epoch {}] Train: FM_train_loss: {}'.format(i, FM_train_loss / n_sample))
-            logger.info('---------------------------------------------------------------------------')
+            # logger.info('[Epoch {}] Train: D_fake_loss: {}'.format(i, D_fake_loss / n_sample))
+            # logger.info('[Epoch {}] Train: D_real_loss: {}'.format(i, D_real_loss / n_sample))
+            # logger.info('[Epoch {}] Train: D_class_loss: {}'.format(i, D_class_loss / n_sample))
+            # logger.info('[Epoch {}] Train: G_train_loss: {}'.format(i, G_train_loss / n_sample))
+            # logger.info('[Epoch {}] Train: FM_train_loss: {}'.format(i, FM_train_loss / n_sample))
+            # logger.info('---------------------------------------------------------------------------')
 
             D_total_fake_loss.append(D_fake_loss / n_sample)
             D_total_real_loss.append(D_real_loss / n_sample)
@@ -293,14 +295,14 @@ def main(args):
                         save_model(E, path=config['bert_save_path'], model_name='bert')
 
 
-                logger.info('valid_eer: {}'.format(eval_result['eer']))
-                logger.info('valid_oos_ind_precision: {}'.format(eval_result['oos_ind_precision']))
-                logger.info('valid_oos_ind_recall: {}'.format(eval_result['oos_ind_recall']))
-                logger.info('valid_oos_ind_f_score: {}'.format(eval_result['oos_ind_f_score']))
-                logger.info('valid_auc: {}'.format(eval_result['auc']))
-                logger.info('valid_fpr95: {}'.format(eval_result['fpr95']))
-                logger.info('valid_accuracy: {}'.format(eval_result['accuracy']))
-                logger.info('\n' + eval_result['report'])
+                # logger.info('valid_eer: {}'.format(eval_result['eer']))
+                # logger.info('valid_oos_ind_precision: {}'.format(eval_result['oos_ind_precision']))
+                # logger.info('valid_oos_ind_recall: {}'.format(eval_result['oos_ind_recall']))
+                # logger.info('valid_oos_ind_f_score: {}'.format(eval_result['oos_ind_f_score']))
+                # logger.info('valid_auc: {}'.format(eval_result['auc']))
+                # logger.info('valid_fpr95: {}'.format(eval_result['fpr95']))
+                # logger.info('valid_accuracy: {}'.format(eval_result['accuracy']))
+                # logger.info('\n' + eval_result['report'])
 
         from utils.visualization import draw_curve
         draw_curve(D_total_fake_loss, iteration, 'D_total_fake_loss', args.output_dir)
@@ -583,6 +585,13 @@ def main(args):
         logger.info('eval_accuracy: {}'.format(eval_result['accuracy']))
         logger.info('\n' + eval_result['report'])
 
+        gross_result['eval_oos_ind_precision'] = eval_result['oos_ind_precision']
+        gross_result['eval_oos_ind_recall'] = eval_result['oos_ind_recall']
+        gross_result['eval_oos_ind_f_score'] = eval_result['oos_ind_f_score']
+        gross_result['eval_eer'] = eval_result['eer']
+        gross_result['eval_fpr95'] = ErrorRateAt95Recall(eval_result['all_binary_y'], eval_result['y_score'])
+        gross_result['eval_auc'] = eval_result['auc']
+
     if args.do_test:
         text_test_set = processor.read_dataset(data_path, ['test'])
         test_features = processor.convert_to_ids(text_test_set)
@@ -600,6 +609,13 @@ def main(args):
         logger.info('\n' + test_result['report'])
 
         save_result(test_result, os.path.join(args.output_dir, 'test_result'))
+
+        gross_result['test_oos_ind_precision'] = test_result['oos_ind_precision']
+        gross_result['test_oos_ind_recall'] = test_result['oos_ind_recall']
+        gross_result['test_oos_ind_f_score'] = test_result['oos_ind_f_score']
+        gross_result['test_eer'] = test_result['eer']
+        gross_result['test_fpr95'] = ErrorRateAt95Recall(test_result['all_binary_y'], test_result['y_score'])
+        gross_result['test_auc'] = test_result['auc']
 
         # 输出错误cases
         texts = [line['text'] for line in text_test_set]
@@ -626,6 +642,16 @@ def main(args):
         fig = visualization.scatter_plot(data, processor)
         fig.savefig(os.path.join(args.output_dir, 'plot.png'))
         fig.show()
+
+    if args.result != 'no':
+        pd_result = pd.DataFrame(gross_result)
+        logger.info('save to gross result')
+        if args.seed == 16:
+            pd_result.to_csv(args.result + '_gross_result.csv', index=False)
+        else:
+            pd_result.to_csv(args.result + '_gross_result.csv', index=False, mode='a', header=False)
+        if args.seed == 8192:
+            std_mean(args.result + '_gross_result.csv')
 
 
 if __name__ == '__main__':
@@ -713,6 +739,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--save_model', action='store_true', default=False,
                         help='Whether to save model.')
+    parser.add_argument('--result', type=str, default="no")
 
     # 解析参数
     args = parser.parse_args()
