@@ -535,7 +535,7 @@ def main(args):
         if args.remove_entity:
             logger.info('remove entity in train_dataset')
             entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
-            logger.info(entity_processor.compiled)
+            # logger.info(entity_processor.compiled)
             text_train_set, num = entity_processor.remove_smp_entity(text_train_set)
             logger.info('the number of solved entity data: ' + str(num))
 
