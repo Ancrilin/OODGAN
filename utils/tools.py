@@ -333,12 +333,11 @@ def std_mean(path):
     mean_result['mean_test_fpr95'] = mean_test_fpr95
     mean_result['mean_test_auc'] = mean_test_auc
 
-    # print(std_result)
-    # print(mean_result)
     std_result = pd.DataFrame(std_result)
     mean_result = pd.DataFrame(mean_result)
     std_result.to_csv(path, index=False, mode='a', header=False)
     mean_result.to_csv(path, index=False, mode='a', header=False)
+
 
 if __name__ == '__main__':
     pass

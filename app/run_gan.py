@@ -645,13 +645,12 @@ def main(args):
 
     if args.result != 'no':
         pd_result = pd.DataFrame(gross_result)
-        logger.info('save to gross result')
         if args.seed == 16:
-            pd_result.to_csv(args.result + '_gross_result.csv', index=False)
+            pd_result.to_csv(os.path.join(args.result, args.result + '_gross_result.csv'), index=False)
         else:
-            pd_result.to_csv(args.result + '_gross_result.csv', index=False, mode='a', header=False)
+            pd_result.to_csv(os.path.join(args.result, args.result + '_gross_result.csv'), index=False, mode='a', header=False)
         if args.seed == 8192:
-            std_mean(args.result + '_gross_result.csv')
+            std_mean(os.path.join(args.result, args.result + '_gross_result.csv'))
 
 
 if __name__ == '__main__':

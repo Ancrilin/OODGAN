@@ -10,6 +10,7 @@ for seed in ${seeds} ; do
   --fine_tune \
   --n_epoch=500  \
   --patience=10 \
+  --fake_sample_weight=1.0  \
   --D_lr=2e-5 \
   --G_lr=2e-5 \
   --bert_lr=4e-5  \
@@ -22,7 +23,7 @@ for seed in ${seeds} ; do
   --do_eval \
   --do_test \
   --do_vis \
-  --output_dir=only-minlen-gan/only-minlen-gan-smp_${seed}  \
+  --output_dir=only-minlen_${1}-gan/only-minlen_${1}-gan-smp_${seed}  \
   --minlen=${1}
 
 done

@@ -8,6 +8,7 @@ for seed in ${seeds} ; do
   --fine_tune \
   --n_epoch=500  \
   --patience=10 \
+  --fake_sample_weight=1.0  \
   --D_lr=2e-5 \
   --G_lr=2e-5 \
   --bert_lr=4e-5  \
@@ -21,7 +22,8 @@ for seed in ${seeds} ; do
   --do_test \
   --do_vis \
   --output_dir=only-remove-entity-gan/only-remove-entity-gan-smp_${seed}  \
-  --remove_entity
+  --remove_entity \
+  --result=only-remove_entity-gan
 
 done
 exit 0

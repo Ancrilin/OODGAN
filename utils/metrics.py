@@ -112,16 +112,12 @@ def cal_eer(y_true, y_score):
     return eer
 
 
-if __name__ == '__main__':
-    predicts = [0, 1, 0, 1, 0, 0]
-    label = [0, 1, 1, 0, 1, 0]
 
-    print(binary_recall_fscore(predicts, label))
-    print(binary_classification_report(predicts, label))
-    print(binary_accuracy(predicts, label))
-    import metrics
-    report = binary_classification_report(predicts, label)
-    dic = dict()
-    dic.update(report)
-    print(report)
-    print(dic['accuracy'])
+
+if __name__ == '__main__':
+    a = [1, 1, 2, 2, 4, 5, 5, 5, 6, 7, 7, 8, 8, 8, 8, 8, 9, 10, 10, 10, 10, 11, 12]
+    print(np.mean(a))
+    print(np.median(a))
+
+    from scipy import stats
+    print(stats.mode(a)[0][0])
