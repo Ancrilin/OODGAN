@@ -23,7 +23,7 @@ for seed in ${seeds} ; do
   --do_vis \
   --output_dir=only-remove-entity-gan/only-remove-entity-gan-smp_${seed}  \
   --remove_entity \
-  --result=only-remove_entity-gan
+  --result=only-remove-entity-gan
 
 done
 exit 0
