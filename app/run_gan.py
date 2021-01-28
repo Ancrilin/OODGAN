@@ -751,6 +751,7 @@ if __name__ == '__main__':
     os.makedirs(args.output_dir, exist_ok=True)
     logger = Logger(os.path.join(args.output_dir, 'train.log'))
     logger.info(os.getcwd())
+    logger.info('mkdir output_dir: ' + args.output_dir)
     main(args)
     if not args.save_model:
         logger.info('Delete model...')
