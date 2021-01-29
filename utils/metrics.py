@@ -112,6 +112,19 @@ def cal_eer(y_true, y_score):
     return eer
 
 
+# 平均数
+def get_mean(array: list):
+    return np.mean(array)
+
+
+# 中位数
+def get_median(array: list):
+    return np.median(array)
+
+
+# 众数
+def get_mode(array: list):
+    return stats.mode(array)[0][0]
 
 
 if __name__ == '__main__':
