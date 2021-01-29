@@ -116,8 +116,19 @@ def cal_eer(y_true, y_score):
 
 if __name__ == '__main__':
     a = [1, 1, 2, 2, 4, 5, 5, 5, 6, 7, 7, 8, 8, 8, 8, 8, 9, 10, 10, 10, 10, 11, 12]
+    b = [0.806891922,
+    0.727703576,
+    0.69545793,
+    0.744614097,
+    0.708913915,
+    0.764925373,
+    0.753732913,
+    0.785562633,
+    0.807453416,
+]
     print(np.mean(a))
     print(np.median(a))
 
     from scipy import stats
     print(stats.mode(a)[0][0])
+    print(np.mean(b))

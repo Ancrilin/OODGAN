@@ -52,6 +52,7 @@ def check_args(args):
         raise argparse.ArgumentError('Gradient_accumulation_steps should >=1 and train_batch_size%gradient_accumulation_steps == 0')
 
 gross_result = {}
+gross_result['type'] = ['ind', 'oos']
 
 def main(args):
     """
