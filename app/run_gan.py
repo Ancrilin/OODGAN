@@ -648,11 +648,11 @@ def main(args):
     if args.result != 'no':
         pd_result = pd.DataFrame(gross_result)
         if args.seed == 16:
-            pd_result.to_csv(os.path.join(args.result, args.result + '_gross_result.csv'), index=False)
+            pd_result.to_csv(args.result + '_gross_result.csv', index=False)
         else:
-            pd_result.to_csv(os.path.join(args.result, args.result + '_gross_result.csv'), index=False, mode='a', header=False)
+            pd_result.to_csv(args.result + '_gross_result.csv', index=False, mode='a', header=False)
         if args.seed == 35085:
-            std_mean(os.path.join(args.result, args.result + '_gross_result.csv'))
+            std_mean(args.result + '_gross_result.csv')
 
 
 if __name__ == '__main__':
@@ -750,8 +750,6 @@ if __name__ == '__main__':
     # Log
     from logger import Logger
     os.makedirs(args.output_dir, exist_ok=True)
-    if args.result != 'no':
-        os.makedirs(args.result, exist_ok=True)
     logger = Logger(os.path.join(args.output_dir, 'train.log'))
     logger.info(os.getcwd())
     logger.info('mkdir output_dir: ' + args.output_dir)
