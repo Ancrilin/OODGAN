@@ -25,7 +25,8 @@ for seed in ${seeds} ; do
   --do_vis \
   --result=remove-entity-minlen/remove-entity-minlen_${1}-gan \
   --output_dir=remove-entity-minlen/remove-entity-minlen_${1}-gan/remove-entity-minlen_${1}-gan-smp_${seed}  \
-  --minlen=${1}
+  --minlen=${1} \
+  --remove_entity \
 
 done
 exit 0
