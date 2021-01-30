@@ -2,7 +2,7 @@
 
 seeds="16 123 256 512 1024 1536 2048 4096 8192 47790 10464 28349 48533 28602 16850 35085"
 
-# $1 maxlen
+# ${1} minlen
 
 for seed in ${seeds} ; do
   python -m app.run_gan \
@@ -22,10 +22,10 @@ for seed in ${seeds} ; do
   --do_train \
   --do_eval \
   --do_test \
-  --do_vis  \
-  --result=only-maxlen/only-maxlen_${1}-gan \
-  --output_dir=only-maxlen/only-maxlen_${1}-gan/only-maxlen_${1}-gan-smp_${seed}  \
-  --maxlen=${1}
+  --do_vis \
+  --result=remove-entity-minlen/remove-entity-minlen_${1}-gan \
+  --output_dir=remove-entity-minlen/remove-entity-minlen_${1}-gan/remove-entity-minlen_${1}-gan-smp_${seed}  \
+  --minlen=${1}
 
 done
 exit 0

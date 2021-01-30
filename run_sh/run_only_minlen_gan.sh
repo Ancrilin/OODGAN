@@ -23,7 +23,8 @@ for seed in ${seeds} ; do
   --do_eval \
   --do_test \
   --do_vis \
-  --output_dir=only-minlen_${1}-gan/only-minlen_${1}-gan-smp_${seed}  \
+  --result=only-minlen/only-minlen_${1}-gan \
+  --output_dir=only-minlen/only-minlen_${1}-gan/only-minlen_${1}-gan-smp_${seed}  \
   --minlen=${1}
 
 done

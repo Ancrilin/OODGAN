@@ -644,13 +644,14 @@ def main(args):
         fig.savefig(os.path.join(args.output_dir, 'plot.png'))
         fig.show()
 
+    gross_result['seed'] = args.seed
     if args.result != 'no':
         pd_result = pd.DataFrame(gross_result)
         if args.seed == 16:
             pd_result.to_csv(os.path.join(args.result, args.result + '_gross_result.csv'), index=False)
         else:
             pd_result.to_csv(os.path.join(args.result, args.result + '_gross_result.csv'), index=False, mode='a', header=False)
-        if args.seed == 8192:
+        if args.seed == 35085:
             std_mean(os.path.join(args.result, args.result + '_gross_result.csv'))
 
 
@@ -756,3 +757,4 @@ if __name__ == '__main__':
     if not args.save_model:
         logger.info('Delete model...')
         tools.removeDir(os.path.join(args.output_dir, 'save',))
+    logger.info('Ending')
