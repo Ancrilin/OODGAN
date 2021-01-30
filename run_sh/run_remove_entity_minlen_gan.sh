@@ -26,7 +26,7 @@ for seed in ${seeds} ; do
   --result=remove-entity-minlen/remove-entity-minlen_${1}-gan \
   --output_dir=remove-entity-minlen/remove-entity-minlen_${1}-gan/remove-entity-minlen_${1}-gan-smp_${seed}  \
   --minlen=${1} \
-  --remove_entity \
+  --remove_entity
 
 done
 exit 0
