@@ -750,6 +750,8 @@ if __name__ == '__main__':
     # Log
     from logger import Logger
     os.makedirs(args.output_dir, exist_ok=True)
+    if args.result != 'no':
+        os.makedirs(args.result, exist_ok=True)
     logger = Logger(os.path.join(args.output_dir, 'train.log'))
     logger.info(os.getcwd())
     logger.info('mkdir output_dir: ' + args.output_dir)
