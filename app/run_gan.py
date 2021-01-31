@@ -542,6 +542,7 @@ def main(args):
 
         if args.minlen != -1:
             logger.info('remove minlen data')
+            logger.info('minlen: ' + str(args.minlen))
             previous_len = len(text_train_set)
             logger.info('previous len: ' + str(previous_len))
             text_train_set = processor.remove_minlen(dataset=text_train_set, minlen=args.minlen)
@@ -551,6 +552,7 @@ def main(args):
 
         if args.maxlen != -1:
             logger.info('remove maxlen data')
+            logger.info('maxlen: ' + str(args.maxlen))
             previous_len = len(text_train_set)
             logger.info('previous len: ' + str(previous_len))
             text_train_set = processor.remove_maxlen(text_train_set, maxlen=args.maxlen)
