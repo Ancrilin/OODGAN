@@ -453,6 +453,8 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float, default=4e-5,
                         help="Learning rate for Discriminator.")
 
+    parser.add_argument('--result', type=str, default="no")
+
     # 解析参数
     args = parser.parse_args()
 
