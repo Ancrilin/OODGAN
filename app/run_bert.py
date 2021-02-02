@@ -23,7 +23,7 @@ from config import BertConfig, Config
 from data_processor.smp_processor import SMP_Processor
 from model.bert import BertClassifier
 from data_utils.dataset import MyDataset
-from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_model, load_model, save_result, output_cases, save_feature
+from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_model, load_model, save_result, output_cases, save_feature, std_mean
 import utils.metrics as metrics
 
 # 检测设备
@@ -45,6 +45,8 @@ def check_args(args):
     if args.gradient_accumulation_steps < 1 or args.train_batch_size % args.gradient_accumulation_steps != 0:
         raise argparse.ArgumentError('Gradient_accumulation_steps should >=1 and train_batch_size%gradient_accumulation_steps == 0')
 
+gross_result = {}
+gross_result['type'] = ['ind', 'oos']
 
 def main(args):
     """
@@ -343,6 +345,13 @@ def main(args):
         logger.info('report')
         logger.info(eval_result['report'])
 
+        gross_result['eval_oos_ind_precision'] = eval_result['oos_ind_precision']
+        gross_result['eval_oos_ind_recall'] = eval_result['oos_ind_recall']
+        gross_result['eval_oos_ind_f_score'] = eval_result['oos_ind_f_score']
+        gross_result['eval_eer'] = eval_result['eer']
+        gross_result['eval_fpr95'] = ErrorRateAt95Recall(eval_result['all_binary_y'], eval_result['y_score'])
+        gross_result['eval_auc'] = eval_result['auc']
+
     if args.do_test:
         text_test_set = processor.read_dataset(data_path, ['test'])
         test_features = processor.convert_to_ids(text_test_set)
@@ -362,6 +371,13 @@ def main(args):
 
         save_result(test_result, os.path.join(args.output_dir, 'test_result'))
 
+        gross_result['test_oos_ind_precision'] = test_result['oos_ind_precision']
+        gross_result['test_oos_ind_recall'] = test_result['oos_ind_recall']
+        gross_result['test_oos_ind_f_score'] = test_result['oos_ind_f_score']
+        gross_result['test_eer'] = test_result['eer']
+        gross_result['test_fpr95'] = ErrorRateAt95Recall(test_result['all_binary_y'], test_result['y_score'])
+        gross_result['test_auc'] = test_result['auc']
+
         # 输出错误cases
         texts = [line['text'] for line in text_test_set]
         output_cases(texts, test_result['all_y'], test_result['all_pred'],
@@ -370,6 +386,16 @@ def main(args):
         # confusion matrix
         metrics.plot_confusion_matrix(test_result['all_y'], test_result['all_pred'],
                               args.output_dir)
+
+    gross_result['seed'] = args.seed
+    if args.result != 'no':
+        pd_result = pd.DataFrame(gross_result)
+        if args.seed == 16:
+            pd_result.to_csv(args.result + '_gross_result.csv', index=False)
+        else:
+            pd_result.to_csv(args.result + '_gross_result.csv', index=False, mode='a', header=False)
+        if args.seed == 35085:
+            std_mean(args.result + '_gross_result.csv')
 
 
 if __name__ == '__main__':
