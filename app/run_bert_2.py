@@ -297,7 +297,7 @@ def main(args):
         report = metrics.binary_classification_report(all_y, all_binary_preds)
 
         result['all_y'] = all_y.tolist()
-        result['all_pred'] = all_pred.tolist()
+        result['all_pred'] = all_binary_preds.tolist()
         result['test_logit'] = all_pred.tolist()
 
         result['eer'] = eer
