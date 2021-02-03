@@ -17,8 +17,8 @@ for seed in ${seeds} ; do
   --do_train \
   --do_eval \
   --do_test \
-  --result=base-bert/base-bert \
-  --output_dir=base-bert/base-bert-smp_${seed}
+  --result=base-bert_2/base-bert_2 \
+  --output_dir=base-bert_2/base-bert_2-smp_${seed}
 
 done
 exit 0
