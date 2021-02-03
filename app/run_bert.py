@@ -248,7 +248,7 @@ def main(args):
         result['auc'] = roc_auc_score(all_binary_y, y_score)
         result['fpr95'] = fpr95
         result['report'] = report
-        result['accuracy'] = metrics.binary_accuracy(all_binary_y, all_pred)
+        result['accuracy'] = metrics.binary_accuracy(all_pred, all_binary_y)
 
         return result
 
@@ -306,7 +306,7 @@ def main(args):
         result['auc'] = roc_auc_score(all_binary_y, y_score)
         result['fpr95'] = fpr95
         result['report'] = report
-        result['accuracy'] = metrics.binary_accuracy(all_binary_y, all_pred)
+        result['accuracy'] = metrics.binary_accuracy(all_pred, all_binary_y)
 
         return result
 

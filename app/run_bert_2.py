@@ -175,7 +175,7 @@ def main(args):
                 elif signal == 0:
                     pass
                 elif signal == 1:
-                    save_model(model, path=config['model_save_path'], model_name='bert')
+                    save_model(model, path=config['model_save_path'], model_name='bert_2')
 
 
                 logger.info('valid_eer: {}'.format(eval_result['eer']))
@@ -195,7 +195,7 @@ def main(args):
             draw_curve(valid_ind_class_acc, iteration, 'valid_ind_class_accuracy', args.output_dir)
 
         if args.patience >= args.n_epoch:
-            save_model(model, path=config['model_save_path'], model_name='bert')
+            save_model(model, path=config['model_save_path'], model_name='bert_2')
 
     def eval(dataset):
         dev_dataloader = DataLoader(dataset, batch_size=args.predict_batch_size, shuffle=False, num_workers=2)
@@ -226,17 +226,18 @@ def main(args):
 
         # all_pred = torch.cat(all_pred, 0).cpu() # 预测值拼接
         all_pred = torch.cat(all_pred, 0).cpu() # 推断值拼接
+        all_binary_preds = tools.convert_to_int_by_threshold(all_pred.squeeze())  # [length, 1]
 
         all_pred = all_pred.squeeze()
         total_loss = classified_loss(all_pred, all_binary_y.float())
         y_score = all_pred.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
-            all_pred, all_y)
-        ind_class_acc = metrics.ind_class_accuracy(all_pred, all_y)
+            all_binary_preds, all_y)
+        ind_class_acc = metrics.ind_class_accuracy(all_binary_preds, all_y)
         fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
 
-        report = metrics.binary_classification_report(all_y, all_pred)
+        report = metrics.binary_classification_report(all_y, all_binary_preds)
 
         result['eer'] = eer
         result['ind_class_acc'] = ind_class_acc
@@ -249,12 +250,12 @@ def main(args):
         result['auc'] = roc_auc_score(all_binary_y, y_score)
         result['fpr95'] = fpr95
         result['report'] = report
-        result['accuracy'] = metrics.binary_accuracy(all_binary_y, all_pred)
+        result['accuracy'] = metrics.binary_accuracy(all_binary_preds, all_binary_y)
 
         return result
 
     def test(dataset):
-        load_model(model, path=config['model_save_path'], model_name='bert')
+        load_model(model, path=config['model_save_path'], model_name='bert_2')
         test_dataloader = DataLoader(dataset, batch_size=args.predict_batch_size, shuffle=False, num_workers=2)
         n_sample = len(test_dataloader)
         result = dict()
@@ -282,16 +283,17 @@ def main(args):
 
         # all_pred = torch.cat(all_pred, 0).cpu()  # 预测值拼接
         all_pred = torch.cat(all_pred, 0).cpu()  # 推断值拼接
+        all_binary_preds = tools.convert_to_int_by_threshold(all_pred.squeeze())  # [length, 1]
 
         all_pred = all_pred.squeeze()
         y_score = all_pred.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
-            all_pred, all_y)
-        ind_class_acc = metrics.ind_class_accuracy(all_pred, all_y)
+            all_binary_preds, all_y)
+        ind_class_acc = metrics.ind_class_accuracy(all_binary_preds, all_y)
         fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
 
-        report = metrics.binary_classification_report(all_y, all_pred)
+        report = metrics.binary_classification_report(all_y, all_binary_preds)
 
         result['all_y'] = all_y.tolist()
         result['all_pred'] = all_pred.tolist()
@@ -308,7 +310,7 @@ def main(args):
         result['auc'] = roc_auc_score(all_binary_y, y_score)
         result['fpr95'] = fpr95
         result['report'] = report
-        result['accuracy'] = metrics.binary_accuracy(all_binary_y, all_pred)
+        result['accuracy'] = metrics.binary_accuracy(all_binary_preds, all_binary_y)
 
         return result
 
