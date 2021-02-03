@@ -228,7 +228,7 @@ def main(args):
         all_pred = torch.cat(all_pred, 0).cpu() # 预测值拼接
         all_logit = torch.cat(all_logit, 0).cpu() # 推断值拼接
 
-        y_score = all_logit.softmax(1)[:, 1].tolist()
+        y_score = all_logit.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
             all_pred, all_y)
@@ -283,7 +283,7 @@ def main(args):
         all_pred = torch.cat(all_pred, 0).cpu()  # 预测值拼接
         all_logit = torch.cat(all_logit, 0).cpu()  # 推断值拼接
 
-        y_score = all_logit.softmax(1)[:, 1].tolist()
+        y_score = all_logit.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
             all_pred, all_y)
