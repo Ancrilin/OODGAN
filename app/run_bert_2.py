@@ -26,6 +26,7 @@ from model.bert_2 import BertClassifier
 from data_utils.dataset import MyDataset
 from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_model, load_model, save_result, output_cases, save_feature, std_mean
 import utils.metrics as metrics
+import utils.tools as tools
 
 # 检测设备
 if torch.cuda.is_available():
