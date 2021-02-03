@@ -26,16 +26,7 @@ class BertClassifier(nn.Module):
 
 
     def forward(self, input_ids, attention_mask=None, token_type_ids=None):
-        # print('input')
-        # print(type(input_ids))
-        # print(input_ids)
-        # sequence_output, pooled_output = self.bert(input_ids, attention_mask, token_type_ids)
         bert_result = self.bert(input_ids, attention_mask, token_type_ids, return_dict=False)
-        # sequence_output = result.last_hidden_state
-        # pooled_output = result.pooler_output
-        # print('result')
-        # print(type(result))
-        # print(result)
         last_hidden_state, pooled_output = bert_result
         logits = self.classifier(pooled_output)
         # logits = self.classifier(result[1])
