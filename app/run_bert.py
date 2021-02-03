@@ -454,6 +454,8 @@ if __name__ == '__main__':
                         help="Learning rate for Discriminator.")
 
     parser.add_argument('--result', type=str, default="no")
+    parser.add_argument('--save_model', action='store_true', default=False,
+                        help='Whether to save model.')
 
     # 解析参数
     args = parser.parse_args()
@@ -466,3 +468,8 @@ if __name__ == '__main__':
     logger = Logger(os.path.join(args.output_dir, 'train.log'))
     logger.info(os.getcwd())
     main(args)
+    if not args.save_model:
+        import utils.tools as tools
+        logger.info('Delete model...')
+        tools.removeDir(os.path.join(args.output_dir, 'save',))
+    logger.info('Ending')
