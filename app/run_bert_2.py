@@ -142,7 +142,7 @@ def main(args):
 
                 logits = model(token, mask, type_ids)
                 logits = logits.squeeze()
-                loss = classified_loss(logits, y.float())
+                loss = classified_loss(logits, (y != 0.0).float())
                 total_loss += loss.item()
                 loss = loss / args.gradient_accumulation_steps
                 loss.backward()
@@ -219,20 +219,20 @@ def main(args):
             with torch.no_grad():
                 logit = model(token, mask, type_ids)
                 all_logit.append(logit) # 推断值
-                all_pred.append(torch.argmax(logit, 1)) # 预测label
-                total_loss += classified_loss(logit.squeeze(), y.float())
+                # all_pred.append(torch.argmax(logit, 1)) # 预测label
 
         all_y = LongTensor(dataset.dataset[:, -1].astype(int)).cpu()  # [length, n_class] 原始真实label
         all_binary_y = (all_y != 0).long()  # [length, 1] label 0 is oos    二分类ood， ind 真实label
 
-        all_pred = torch.cat(all_pred, 0).cpu() # 预测值拼接
+        # all_pred = torch.cat(all_pred, 0).cpu() # 预测值拼接
         all_logit = torch.cat(all_logit, 0).cpu() # 推断值拼接
 
+        total_loss = classified_loss(all_logit, all_binary_y.float())
         y_score = all_logit.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
             all_pred, all_y)
-        ind_class_acc = metrics.ind_class_accuracy(all_pred, all_y)
+        ind_class_acc = metrics.ind_class_accuracy(all_logit, all_y)
         fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
 
         report = metrics.binary_classification_report(all_y, all_pred)
@@ -274,26 +274,25 @@ def main(args):
             with torch.no_grad():
                 logit = model(token, mask, type_ids)
                 all_logit.append(logit)  # 推断值
-                all_pred.append(torch.argmax(logit, 1))  # 预测label
-                total_loss += classified_loss(logit.squeeze(), y.float())
+                # all_pred.append(torch.argmax(logit, 1))  # 预测label
 
         all_y = LongTensor(dataset.dataset[:, -1].astype(int)).cpu()  # [length, n_class] 原始真实label
         all_binary_y = (all_y != 0).long()  # [length, 1] label 0 is oos    二分类ood， ind 真实label
 
-        all_pred = torch.cat(all_pred, 0).cpu()  # 预测值拼接
+        # all_pred = torch.cat(all_pred, 0).cpu()  # 预测值拼接
         all_logit = torch.cat(all_logit, 0).cpu()  # 推断值拼接
 
         y_score = all_logit.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
             all_pred, all_y)
-        ind_class_acc = metrics.ind_class_accuracy(all_pred, all_y)
+        ind_class_acc = metrics.ind_class_accuracy(all_logit, all_y)
         fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
 
         report = metrics.binary_classification_report(all_y, all_pred)
 
         result['all_y'] = all_y.tolist()
-        result['all_pred'] = all_pred.tolist()
+        result['all_pred'] = all_logit.tolist()
         result['test_logit'] = all_logit.tolist()
 
         result['eer'] = eer
