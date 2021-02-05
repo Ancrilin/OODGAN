@@ -237,7 +237,7 @@ def main(args):
                 z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
                 fake_feature = G(z).detach()
                 fake_discriminator_output = D.detect_only(fake_feature)
-                fake_loss = args.fake_sample_weight * adversarial_loss(fake_discriminator_output, fake_label)
+                fake_loss = args.fake_sample_weight * adversarial_loss(fake_discriminator_output, fake_label.squeeze())
                 fake_loss.backward()
                 optimizer_D.step()
 
@@ -248,7 +248,7 @@ def main(args):
                 optimizer_G.zero_grad()
                 z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
                 fake_f_vector, D_decision = D.detect_only(G(z), return_feature=True)
-                gd_loss = adversarial_loss(D_decision, true_label)
+                gd_loss = adversarial_loss(D_decision, true_label.squeeze())
                 fm_loss = torch.abs(torch.mean(real_f_vector.detach(), 0) - torch.mean(fake_f_vector, 0)).mean()
                 g_loss = gd_loss + 0 * fm_loss  # 简单除去FM项损失
                 g_loss.backward()
