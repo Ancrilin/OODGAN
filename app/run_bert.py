@@ -144,6 +144,8 @@ def main(args):
                 print('y')
                 print(y.long())
                 loss = classified_loss(logits, y.long())
+                print('loss')
+                print(loss)
                 total_loss += loss.item()
                 loss = loss / args.gradient_accumulation_steps
                 loss.backward()
