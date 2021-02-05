@@ -25,7 +25,7 @@ from data_processor.smp_processor import SMP_Processor
 from data_utils.dataset import MyDataset
 from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_gan_model, load_gan_model, save_result, save_model, output_cases, save_feature, std_mean
 import utils.metrics as metrics
-from model.gan import Discriminator, Generator
+from model.gan_2 import Discriminator, Generator
 import utils.tools as tools
 from sklearn.manifold import TSNE
 from utils import visualization
