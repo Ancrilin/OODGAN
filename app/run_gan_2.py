@@ -229,8 +229,8 @@ def main(args):
                     class_loss = classified_loss(classification_output, y.long())
                     real_loss += class_loss
                     D_class_loss += class_loss.detach()
-                print('real loss', real_loss.size())
-                print(real_loss)
+                # print('real loss', real_loss.size())
+                # print(real_loss)
                 real_loss.backward()
 
                 # train D on fake
