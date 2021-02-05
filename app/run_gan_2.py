@@ -210,8 +210,8 @@ def main(args):
                 batch = len(token)
 
                 # the label used to train generator and discriminator.
-                true_label = FloatTensor(batch, 1).fill_(1.0).detach()
-                fake_label = FloatTensor(batch, 1).fill_(0.0).detach()
+                true_label = LongTensor(batch, 1).fill_(1.0).detach()
+                fake_label = LongTensor(batch, 1).fill_(0.0).detach()
 
                 # bert encoder real_sample
                 optimizer_E.zero_grad()
