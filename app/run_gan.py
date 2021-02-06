@@ -22,6 +22,7 @@ from sklearn.metrics import roc_auc_score
 from utils.tools import check_manual_seed
 from config import BertConfig, Config
 from data_processor.smp_processor import SMP_Processor
+from data_processor.oos_eval_processor import OOS_Eval_Processor
 from data_utils.dataset import MyDataset
 from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_gan_model, load_gan_model, save_result, save_model, output_cases, save_feature, std_mean
 import utils.metrics as metrics
@@ -97,7 +98,10 @@ def main(args):
     label_path = data_path.replace('.json', '.label')  #获取label.json文件路径
 
     # 实例化数据处理类
-    processor = SMP_Processor(bert_config, maxlen=32)
+    if args.dataset == 'smp':
+        processor = SMP_Processor(bert_config, maxlen=32)
+    else:
+        processor = OOS_Eval_Processor(bert_config, maxlen=32)
     processor.load_label(label_path)    #加载label, 生成label_to_ids 与 ids_to_label
 
     n_class = len(processor.id_to_label)
@@ -528,19 +532,19 @@ def main(args):
         text_dev_set = processor.read_dataset(data_path, ['val'])
 
         # 去除训练集中的ood数据
-        if args.remove_oodp:
+        if args.remove_oodp and args.dataset == "smp":
             logger.info('remove ood data in train_dataset')
             text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']    # chat is ood data
 
         # 挖去实体词汇
-        if args.remove_entity:
+        if args.remove_entity and args.dataset == "smp":
             logger.info('remove entity in train_dataset')
             entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
             # logger.info(entity_processor.compiled)
             text_train_set, num = entity_processor.remove_smp_entity(text_train_set)
             logger.info('the number of solved entity data: ' + str(num))
 
-        if args.minlen != -1:
+        if args.minlen != -1 and args.dataset == "smp":
             logger.info('remove minlen data')
             logger.info('minlen: ' + str(args.minlen))
             previous_len = len(text_train_set)
@@ -550,7 +554,7 @@ def main(args):
             logger.info('removed len: ' + str(removed_len))
             logger.info('the number of removed minlen data: ' + str(previous_len - removed_len))
 
-        if args.maxlen != -1:
+        if args.maxlen != -1 and args.dataset == "smp":
             logger.info('remove maxlen data')
             logger.info('maxlen: ' + str(args.maxlen))
             previous_len = len(text_train_set)

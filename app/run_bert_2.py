@@ -22,6 +22,7 @@ from sklearn.metrics import roc_auc_score
 from utils.tools import check_manual_seed
 from config import BertConfig, Config
 from data_processor.smp_processor import SMP_Processor
+from data_processor.oos_eval_processor import OOS_Eval_Processor
 from model.bert_2 import BertClassifier
 from data_utils.dataset import MyDataset
 from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_model, load_model, save_result, output_cases, save_feature, std_mean
@@ -87,7 +88,10 @@ def main(args):
     label_path = data_path.replace('.json', '.label')  #获取label.json文件路径
 
     # 实例化数据处理类
-    processor = SMP_Processor(bert_config, maxlen=32)
+    if args.dataset == 'smp':
+        processor = SMP_Processor(bert_config, maxlen=32)
+    else:
+        processor = OOS_Eval_Processor(bert_config, maxlen=32)
     processor.load_label(label_path)    #加载label, 生成label_to_ids 与 ids_to_label
 
     n_class = len(processor.id_to_label)
