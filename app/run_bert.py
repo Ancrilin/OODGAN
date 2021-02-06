@@ -415,6 +415,11 @@ if __name__ == '__main__':
                         choices={'oos-eval', 'smp'}, required=True,
                         help='Which dataset will be used.')
 
+    # binary_smp_full base
+    # binary_smp_full_v2 自己排除知识
+    # binary_smp_full_v3 知识库排除
+    # binary_smp_full_v4 知识库+自己
+
     parser.add_argument('--data_file', required=True, type=str,
                         help="""Which type of dataset to be used, 
                             i.e. binary_undersample.json, binary_wiki_aug.json. Detail in config/data.ini""")
