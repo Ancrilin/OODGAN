@@ -625,7 +625,10 @@ def main(args):
         gross_result['test_auc'] = test_result['auc']
 
         # 输出错误cases
-        texts = [line[0] for line in text_test_set]
+        if args.dataset == "smp":
+            texts = [line['text'] for line in text_test_set]
+        else:
+            texts = [line[0] for line in text_test_set]
         output_cases(texts, test_result['all_y'], test_result['all_detection_binary_preds'],
                      os.path.join(args.output_dir, 'test_cases.csv'), processor, test_result['all_detection_preds'])
 
