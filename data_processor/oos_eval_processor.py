@@ -47,13 +47,13 @@ class OOS_Eval_Processor(BertProcessor):
             self.id_to_label = json.load(f)
             self.label_to_id = {label: i for i, label in enumerate(self.id_to_label)}
 
-    def parse_line(self, line: dict) -> list:
+    def parse_line(self, line: list) -> list:
         """
         :param line: [text, label]
         :return: [text_ids, mask, type_ids, label_ids]
         """
-        text = line['text']
-        label = line['domain']
+        text = line[0]
+        label = line[-1]
 
         ids = self.parse_text_to_bert_token(text) + [self.parse_label(label)]
         return ids
@@ -106,11 +106,17 @@ class OOS_Eval_Processor(BertProcessor):
 if __name__ == '__main__':
     from config import BertConfig
     os.chdir('..')
+    dataset = "oos-eval"
+    data_config = Config('config/data.ini')
+    data_config = data_config(dataset)
+    datafile = "binary_data_full"
+    print(data_config[datafile])
     bertConfig = BertConfig('config/bert.ini')
     bertConfig = bertConfig('bert-base-uncased')
     processor = OOS_Eval_Processor(bertConfig, maxlen=32)
-    label_path = 'data/smp/smp_full.label'
+    label_path = 'data/oos-eval/binary_data_full.label'
     processor.load_label(label_path)
     print(processor.label_to_id)
     print(processor.id_to_label)
     print(bertConfig.hidden_size)
+    print(processor.parse_line(["it is an apple.", "in"]))
