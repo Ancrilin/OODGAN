@@ -1,6 +1,6 @@
 #! /bin/bash
 
-minlens="1 2 3 4 5"
+minlens="6 7 8 9 10"
 
 for minlen in ${minlens} ; do
   bash run_sh/run_remove_entity_minlen_gan.sh ${minlen}
