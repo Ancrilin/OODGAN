@@ -102,7 +102,7 @@ class SMP_Processor(BertProcessor):
                 n_dataset.append(line)
         return n_dataset
 
-    def show_test_len(self, data_path):
+    def show_text_len(self, data_path):
         result = []
         with open(data_path, 'r', encoding='utf-8') as fp:
             source = json.load(fp)
@@ -112,7 +112,7 @@ class SMP_Processor(BertProcessor):
                 n_ood = 0
                 text_len = {}
                 for line in source[type]:
-                    if line[-1] == 'chat':
+                    if line['domain'] == 'chat':
                         n_ood += 1
                     else:
                         n_id += 1
