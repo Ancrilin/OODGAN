@@ -102,6 +102,26 @@ class SMP_Processor(BertProcessor):
                 n_dataset.append(line)
         return n_dataset
 
+    def show_test_len(self, data_path):
+        result = []
+        with open(data_path, 'r', encoding='utf-8') as fp:
+            source = json.load(fp)
+            for type in source:
+                n = 0
+                n_id = 0
+                n_ood = 0
+                text_len = {}
+                for line in source[type]:
+                    if line[-1] == 'oos':
+                        n_ood += 1
+                    else:
+                        n_id += 1
+                    n += 1
+                    text_len[len(line[0])] = text_len.get(len(line[0]), 0) + 1
+                t_result = {'all': n, "ood": n_ood, "id": n_id, 'len': sorted(text_len.items(), key=lambda d: d[0], reverse=False)}
+                result.append({type: t_result})
+        return result
+
 
 if __name__ == '__main__':
     from config import BertConfig

@@ -564,6 +564,10 @@ def main(args):
             logger.info('removed len: ' + str(removed_len))
             logger.info('the number of removed maxlen data: ' + str(previous_len - removed_len))
 
+        if args.dataset == "smp":
+            text_data = processor.show_test_len(data_path)
+            logger.info(text_data[0])
+
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]
         train_features = processor.convert_to_ids(text_train_set)
