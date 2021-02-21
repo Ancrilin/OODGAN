@@ -112,7 +112,7 @@ class SMP_Processor(BertProcessor):
                 n_ood = 0
                 text_len = {}
                 for line in source[type]:
-                    if line[-1] == 'oos':
+                    if line[-1] == 'chat':
                         n_ood += 1
                     else:
                         n_id += 1
