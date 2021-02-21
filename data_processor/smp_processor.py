@@ -117,7 +117,7 @@ class SMP_Processor(BertProcessor):
                     else:
                         n_id += 1
                     n += 1
-                    text_len[len(line[0])] = text_len.get(len(line[0]), 0) + 1
+                    text_len[len(line['text'])] = text_len.get(len(line['text']), 0) + 1
                 t_result = {'all': n, "ood": n_ood, "id": n_id, 'len': sorted(text_len.items(), key=lambda d: d[0], reverse=False)}
                 result.append({type: t_result})
         return result
