@@ -565,7 +565,7 @@ def main(args):
             logger.info('the number of removed maxlen data: ' + str(previous_len - removed_len))
 
         if args.dataset == "smp":
-            text_data = processor.show_test_len(data_path)
+            text_data = processor.show_text_len(data_path)
             logger.info(text_data[0])
 
         # 文本转换为ids
