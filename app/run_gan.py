@@ -566,7 +566,7 @@ def main(args):
 
         if args.dataset == "smp":
             text_data = processor.show_text_len(data_path)
-            logger.info(text_data['train'])
+            logger.info(text_data)
 
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]
