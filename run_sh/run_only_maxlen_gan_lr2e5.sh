@@ -23,8 +23,8 @@ for seed in ${seeds} ; do
   --do_eval \
   --do_test \
   --do_vis  \
-  --result=only-maxlen/only-maxlen_${1}-gan \
-  --output_dir=only-maxlen/only-maxlen_${1}-gan/only-maxlen_${1}-gan-smp_${seed}  \
+  --result=only-maxlen_lr2e5/only-maxlen_${1}-gan_lr2e5 \
+  --output_dir=only-maxlen_lr2e5/only-maxlen_${1}-gan_lr2e5/only-maxlen_${1}-gan-smp_${seed}  \
   --maxlen=${1}
 
 done
