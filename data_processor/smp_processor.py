@@ -103,7 +103,7 @@ class SMP_Processor(BertProcessor):
         return n_dataset
 
     def show_text_len(self, data_path):
-        result = []
+        result = {}
         with open(data_path, 'r', encoding='utf-8') as fp:
             source = json.load(fp)
             for type in source:
@@ -111,6 +111,7 @@ class SMP_Processor(BertProcessor):
                 n_id = 0
                 n_ood = 0
                 text_len = {}
+                all_text_len = []
                 for line in source[type]:
                     if line['domain'] == 'chat':
                         n_ood += 1
@@ -118,8 +119,10 @@ class SMP_Processor(BertProcessor):
                         n_id += 1
                     n += 1
                     text_len[len(line['text'])] = text_len.get(len(line['text']), 0) + 1
-                t_result = {'all': n, "ood": n_ood, "id": n_id, 'len': sorted(text_len.items(), key=lambda d: d[0], reverse=False)}
-                result.append({type: t_result})
+                    all_text_len.append(len(line['text']))
+            result[type] = {'num': n, 'ood': n_ood, 'id': n_id,
+                            'text_len': sorted(text_len.items(), key=lambda d: d[0], reverse=False),
+                            'all_len': all_text_len}
         return result
 
 
