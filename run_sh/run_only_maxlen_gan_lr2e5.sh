@@ -13,7 +13,7 @@ for seed in ${seeds} ; do
   --fake_sample_weight=1.0  \
   --D_lr=2e-5 \
   --G_lr=2e-5 \
-  --bert_lr=0.1  \
+  --bert_lr=2e-5  \
   --n_epoch=500 \
   --patience=10 \
   --dataset=smp \
