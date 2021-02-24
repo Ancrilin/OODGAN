@@ -21,7 +21,7 @@ for seed in ${seeds} ; do
   --do_eval \
   --do_test \
   --do_vis \
-  --result=base-gan_lr2e5 \
+  --result=base-gan_lr2e5/base-gan_lr2e5 \
   --output_dir=base-gan_lr2e5/base-gan-lr2e5-smp_${seed}
 
 done
