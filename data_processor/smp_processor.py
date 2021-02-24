@@ -13,6 +13,8 @@ import os
 import json
 from config import Config
 from configparser import SectionProxy
+import numpy as np
+from scipy import stats
 
 
 class SMP_Processor(BertProcessor):
@@ -102,7 +104,17 @@ class SMP_Processor(BertProcessor):
                 n_dataset.append(line)
         return n_dataset
 
-    def show_text_len(self, data_path):
+    def get_smp_data_info(self, data_path):
+        """
+
+        Args:
+            data_path: url
+
+        Returns: {'train':{'num':..., 'ood':..., 'id':..., 'tex_len': [(), ()], 'all_len': [],
+                  'val':....,
+                  'test':...}
+
+        """
         result = {}
         with open(data_path, 'r', encoding='utf-8') as fp:
             source = json.load(fp)
@@ -124,6 +136,30 @@ class SMP_Processor(BertProcessor):
                             'text_len': sorted(text_len.items(), key=lambda d: d[0], reverse=False),
                             'all_len': all_text_len}
         return result
+
+    def get_conf_intveral(self, data: list, alpha, logarithm=False):
+        """
+        置信区间
+        Args:
+            data:
+
+        Returns: (a, b)
+        a: 置信上界; b: 置信下界
+
+        alpha : array_like of float
+            Probability that an rv will be drawn from the returned range.
+            Each value should be in the range [0, 1].
+        """
+        data = np.array(data)
+        if logarithm:   # 对数正态分布
+            data = np.log(data)
+        mean = np.mean(data)
+        std = np.std(data, ddof=1)
+        # from scipy import stats
+        skew = stats.skew(data)  # 求偏度
+        kurtosis = stats.kurtosis(data)  # 求峰度
+        conf_intveral = stats.norm.interval(alpha, loc=mean, scale=std) # 置信区间
+        return conf_intveral
 
 
 if __name__ == '__main__':
