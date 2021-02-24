@@ -531,6 +531,10 @@ def main(args):
         text_train_set = processor.read_dataset(data_path, ['train'])
         text_dev_set = processor.read_dataset(data_path, ['val'])
 
+        if args.dataset == "smp":
+            text_data = processor.get_smp_data_info(data_path)
+            logger.info(text_data)
+
         # 去除训练集中的ood数据
         if args.remove_oodp and args.dataset == "smp":
             logger.info('remove ood data in train_dataset')
@@ -564,9 +568,6 @@ def main(args):
             logger.info('removed len: ' + str(removed_len))
             logger.info('the number of removed maxlen data: ' + str(previous_len - removed_len))
 
-        if args.dataset == "smp":
-            text_data = processor.get_smp_data_info(data_path)
-            logger.info(text_data)
 
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]

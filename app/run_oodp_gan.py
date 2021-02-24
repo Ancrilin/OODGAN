@@ -40,6 +40,7 @@ SEED = 123
 freeze_data = dict()
 best_dev = -1
 gross_result = {}
+gross_result['type'] = ['ind', 'oos']
 
 if torch.cuda.is_available():
     device = 'cuda'
@@ -764,7 +765,7 @@ if __name__ == '__main__':
                         help='Whether to fine tune BERT during training.')
     parser.add_argument('--seed', type=int, default=123, help='seed')
     parser.add_argument('--model', type=str, required=True,
-                        choices={'gan', 'dgan', 'lstm_gan', 'cnn_gan'},
+                        choices={'gan_oodp', 'dgan', 'lstm_gan', 'cnn_gan'},
                         help='choose gan model')
 
     # data config
