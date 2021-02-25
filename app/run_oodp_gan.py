@@ -91,24 +91,24 @@ def main(args):
     data_path = os.path.join(data_config['DataDir'], data_config[args.data_file])  # 把目录和文件名合成一个路径
     label_path = data_path.replace('.json', '.label')
 
-    with open(data_path, 'r', encoding='utf-8') as fp:
-        source = json.load(fp)
-        for type in source:
-            n = 0
-            n_id = 0
-            n_ood = 0
-            text_len = {}
-            for line in source[type]:
-                if line['domain'] == 'chat':
-                    n_ood += 1
-                else:
-                    n_id += 1
-                n += 1
-                text_len[len(line['text'])] = text_len.get(len(line['text']), 0) + 1
-            print(type, n)
-            print('ood', n_ood)
-            print('id', n_id)
-            print(sorted(text_len.items(), key=lambda d: d[0], reverse=False))
+    # with open(data_path, 'r', encoding='utf-8') as fp:
+    #     source = json.load(fp)
+    #     for type in source:
+    #         n = 0
+    #         n_id = 0
+    #         n_ood = 0
+    #         text_len = {}
+    #         for line in source[type]:
+    #             if line['domain'] == 'chat':
+    #                 n_ood += 1
+    #             else:
+    #                 n_id += 1
+    #             n += 1
+    #             text_len[len(line['text'])] = text_len.get(len(line['text']), 0) + 1
+    #         print(type, n)
+    #         print('ood', n_ood)
+    #         print('id', n_id)
+    #         print(sorted(text_len.items(), key=lambda d: d[0], reverse=False))
 
     # 实例化数据处理类
     if args.dataset == 'smp':
@@ -288,7 +288,7 @@ def main(args):
                     if args.fine_tune:
                         save_model(E, path=config['bert_save_path'], model_name='bert')
 
-                logger.info(eval_result)
+                # logger.info(eval_result)
                 logger.info('valid_eer: {}'.format(eval_result['eer']))
                 logger.info('valid_oos_ind_precision: {}'.format(eval_result['oos_ind_precision']))
                 logger.info('valid_oos_ind_recall: {}'.format(eval_result['oos_ind_recall']))

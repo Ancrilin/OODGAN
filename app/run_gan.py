@@ -536,6 +536,18 @@ def main(args):
         if args.dataset == "smp":
             text_data = processor.get_smp_data_info(data_path)
             logger.info(text_data)
+            logger.info("train data:")
+            logger.info("num:" + str(text_data['train']['num']))
+            logger.info("ood:" + str(text_data['train']['ood']))
+            logger.info("id:" + str(text_data['train']['id']))
+            logger.info("valid data:")
+            logger.info("num:" + str(text_data['val']['num']))
+            logger.info("ood:" + str(text_data['val']['ood']))
+            logger.info("id:" + str(text_data['val']['id']))
+            logger.info("test data:")
+            logger.info("num:" + str(text_data['test']['num']))
+            logger.info("ood: " + str(text_data['test']['ood']))
+            logger.info("id: " + str(text_data['test']['id']))
 
         # 去除训练集中的ood数据
         if args.remove_oodp and args.dataset == "smp":
