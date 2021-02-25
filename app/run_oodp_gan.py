@@ -517,10 +517,7 @@ def main(args):
         with torch.no_grad():
             while start < num_output:
                 end = min(num_output, start + batch)
-                if args.model == 'lstm_gan' or args.model == 'cnn_gan':
-                    z = FloatTensor(np.random.normal(0, 1, size=(end - start, 32, args.G_z_dim)))
-                else:
-                    z = FloatTensor(np.random.normal(0, 1, size=(end - start, args.G_z_dim)))
+                z = FloatTensor(np.random.normal(0, 1, size=(end - start, args.G_z_dim)))
                 fake_feature = G(z)
                 f_vector, _ = D.detect_only(fake_feature, return_feature=True)
                 fake_features.append(f_vector)
