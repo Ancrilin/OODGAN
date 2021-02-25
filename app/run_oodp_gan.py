@@ -762,9 +762,6 @@ if __name__ == '__main__':
     parser.add_argument('--fine_tune', action='store_true',
                         help='Whether to fine tune BERT during training.')
     parser.add_argument('--seed', type=int, default=123, help='seed')
-    parser.add_argument('--model', type=str, required=True,
-                        choices={'gan_oodp', 'dgan', 'lstm_gan', 'cnn_gan'},
-                        help='choose gan model')
 
     # data config
 
