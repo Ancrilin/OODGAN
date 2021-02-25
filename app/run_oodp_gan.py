@@ -575,6 +575,7 @@ def main(args):
 
         if args.alpha != 1.0 and args.dataset == 'smp':
             conf_intveral = processor.get_conf_intveral(text_data['train']['all_len'], args.alpha, logarithm=True)
+            logger.info('alpha: ' + str(args.alpha))
             logger.info('conf_intveral:')
             logger.info(conf_intveral)
 
