@@ -394,6 +394,8 @@ def main(args):
         result['oos_ind_recall'] = oos_ind_recall
         result['oos_ind_f_score'] = oos_ind_fscore
         result['y_score'] = y_score
+        print("all_binary_y", all_binary_y)
+        print("y_score", y_score)
         result['auc'] = roc_auc_score(all_binary_y, y_score)
         result['fpr95'] = fpr95
         result['accuracy'] = metrics.binary_accuracy(all_detection_binary_preds, all_binary_y)
