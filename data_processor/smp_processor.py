@@ -159,7 +159,7 @@ class SMP_Processor(BertProcessor):
         skew = stats.skew(data)  # 求偏度
         kurtosis = stats.kurtosis(data)  # 求峰度
         conf_intveral = stats.norm.interval(alpha, loc=mean, scale=std) # 置信区间
-        return conf_intveral
+        return np.exp(conf_intveral)
 
 
 if __name__ == '__main__':
