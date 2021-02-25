@@ -573,6 +573,11 @@ def main(args):
             logger.info('remove ood data in train_dataset')
             text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']  # chat is ood data
 
+        if args.alpha != 1.0 and args.dataset == 'smp':
+            conf_intveral = processor.get_conf_intveral(text_data['train']['all_len'], args.alpha, logarithm=True)
+            logger.info('conf_intveral:')
+            logger.info(conf_intveral)
+
         # 挖去实体词汇
         if args.remove_entity and args.dataset == "smp":
             logger.info('remove entity in train_dataset')
@@ -816,6 +821,9 @@ if __name__ == '__main__':
                         help='minlen')
     parser.add_argument('--maxlen', default=-1, type=int,
                         help='maxlen')
+
+    parser.add_argument('--alpha', default=1.0, type=float,
+                        help='Probability of norm distribution.')
 
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
