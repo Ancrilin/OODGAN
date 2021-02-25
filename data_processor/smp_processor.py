@@ -132,9 +132,9 @@ class SMP_Processor(BertProcessor):
                     n += 1
                     text_len[len(line['text'])] = text_len.get(len(line['text']), 0) + 1
                     all_text_len.append(len(line['text']))
-            result[type] = {'num': n, 'ood': n_ood, 'id': n_id,
-                            'text_len': sorted(text_len.items(), key=lambda d: d[0], reverse=False),
-                            'all_len': all_text_len}
+                result[type] = {'num': n, 'ood': n_ood, 'id': n_id,
+                                'text_len': sorted(text_len.items(), key=lambda d: d[0], reverse=False),
+                                'all_len': all_text_len}
         return result
 
     def get_conf_intveral(self, data: list, alpha, logarithm=False):
