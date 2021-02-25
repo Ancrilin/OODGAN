@@ -20,7 +20,6 @@ from sklearn.manifold import TSNE
 from torch.utils.data.dataloader import DataLoader
 from transformers import BertModel
 from transformers.optimization import AdamW
-from importlib import import_module
 from sklearn.metrics import roc_auc_score
 
 import utils.metrics as metrics
@@ -37,7 +36,6 @@ from utils.tools import convert_to_int_by_threshold
 from utils.visualization import scatter_plot, my_plot_roc, plot_train_test
 from utils.tools import ErrorRateAt95Recall, save_result, save_feature, std_mean
 import utils.tools as tools
-from sklearn.manifold import TSNE
 
 
 SEED = 123
