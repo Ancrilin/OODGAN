@@ -12,6 +12,7 @@ for seed in ${seeds} ; do
   --D_lr=2e-5 \
   --G_lr=2e-5 \
   --bert_lr=4e-5  \
+  --G_z_dim=1024  \
   --n_epoch=500 \
   --patience=10 \
   --dataset=smp \
