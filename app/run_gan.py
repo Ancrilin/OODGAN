@@ -135,6 +135,8 @@ def main(args):
     #         print('id', n_id)
     #         print(sorted(text_len.items(), key=lambda d: d[0], reverse=False))
 
+    logger.info('config:')
+    logger.info(config)
     logger.info('BertPreTrainModelDir: ' + bert_config['PreTrainModelDir'])
 
     D = Discriminator(config)
