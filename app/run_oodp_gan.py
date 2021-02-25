@@ -386,6 +386,8 @@ def main(args):
         eer = metrics.cal_eer(all_binary_y, y_score)
         fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
 
+        report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
+
         result['eer'] = eer
         result['all_detection_binary_preds'] = all_detection_binary_preds
         result['detection_acc'] = detection_acc
@@ -399,6 +401,7 @@ def main(args):
         result['auc'] = roc_auc_score(all_binary_y, y_score)
         result['fpr95'] = fpr95
         result['accuracy'] = metrics.binary_accuracy(all_detection_binary_preds, all_binary_y)
+        result['report'] = report
         if n_class > 2:
             result['class_loss'] = class_loss
             result['class_acc'] = class_acc
@@ -482,6 +485,8 @@ def main(args):
         eer = metrics.cal_eer(all_binary_y, y_score)
         fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
 
+        report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
+
         result['eer'] = eer
         result['all_detection_binary_preds'] = all_detection_binary_preds
         result['detection_acc'] = detection_acc
@@ -495,6 +500,7 @@ def main(args):
         result['auc'] = roc_auc_score(all_binary_y, y_score)
         result['fpr95'] = fpr95
         result['accuracy'] = metrics.binary_accuracy(all_detection_binary_preds, all_binary_y)
+        result['report'] = report
         if n_class > 2:
             result['class_loss'] = class_loss
             result['class_acc'] = class_acc
