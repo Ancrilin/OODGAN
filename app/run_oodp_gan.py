@@ -180,6 +180,8 @@ def main(args):
         all_features = []
         result = dict()
 
+        iteration = 0
+
         for i in range(args.n_epoch):
 
             # Initialize model state
@@ -266,6 +268,8 @@ def main(args):
             G_total_train_loss.append(G_train_loss / n_sample)
             FM_total_train_loss.append(FM_train_loss / n_sample)
 
+            iteration += 1
+
             if dev_dataset:
                 # logger.info('#################### eval result at step {} ####################'.format(global_step))
                 eval_result = eval(dev_dataset)
@@ -313,6 +317,17 @@ def main(args):
         freeze_data['valid_oos_ind_f_score'] = valid_oos_ind_f_score
 
         best_dev = -early_stopping.best_score
+
+        from utils.visualization import draw_curve
+        draw_curve(D_total_fake_loss, iteration, 'D_total_fake_loss', args.output_dir)
+        draw_curve(D_total_real_loss, iteration, 'D_total_real_loss', args.output_dir)
+        draw_curve(D_total_class_loss, iteration, 'D_total_class_loss', args.output_dir)
+        draw_curve(G_total_train_loss, iteration, 'G_total_train_loss', args.output_dir)
+        draw_curve(FM_total_train_loss, iteration, 'FM_total_train_loss', args.output_dir)
+
+        if dev_dataset:
+            draw_curve(valid_detection_loss, iteration, 'valid_detection_loss', args.output_dir)
+            # draw_curve(valid_ind_class_acc, iteration, 'valid_ind_class_accuracy', args.output_dir)
 
         if args.do_vis:
             all_features = torch.cat(all_features, 0).cpu().numpy()
