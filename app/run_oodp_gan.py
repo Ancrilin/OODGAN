@@ -501,6 +501,7 @@ def main(args):
         result['fpr95'] = fpr95
         result['accuracy'] = metrics.binary_accuracy(all_detection_binary_preds, all_binary_y)
         result['report'] = report
+        result['all_detection_preds'] = y_score
         if n_class > 2:
             result['class_loss'] = class_loss
             result['class_acc'] = class_acc
