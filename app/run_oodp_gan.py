@@ -31,7 +31,6 @@ from logger import Logger
 from utils.metrics import plot_confusion_matrix
 from data_processor.smp_processor import SMP_Processor
 from data_processor.oos_eval_processor import OOS_Eval_Processor
-from processor.smp_processor_v2 import SMPProcessor_v2
 from utils.tools import check_manual_seed, save_gan_model, load_gan_model, save_model, load_model, output_cases, EarlyStopping
 from data_processor.entity_processor import EntityProcessor
 from utils.tools import convert_to_int_by_threshold
