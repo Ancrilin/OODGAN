@@ -320,7 +320,7 @@ def main(args):
         return result
 
     def eval(dataset):
-        dev_dataloader = DataLoader(dataset, batch_size=args.predict_batch_size, shuffle=False, num_workers=2)
+        dev_dataloader = DataLoader(dataset, batch_size=args.predict_batch_size, shuffle=True, num_workers=2)
         n_sample = len(dev_dataloader)
         result = dict()
 
