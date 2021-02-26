@@ -505,7 +505,7 @@ def main(args):
         result['eer'] = eer
         result['all_detection_binary_preds'] = all_detection_binary_preds
         result['detection_acc'] = detection_acc
-        result['all_binary_y'] = all_binary_y
+        result['all_binary_y'] = all_binary_y.tolist()
         result['all_y'] = all_y
         result['oos_ind_precision'] = oos_ind_precision
         result['oos_ind_recall'] = oos_ind_recall
