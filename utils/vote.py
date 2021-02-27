@@ -57,7 +57,7 @@ if __name__ == '__main__':
     print(score)
     print(np.concatenate(score, axis=1))
 
-    path = '../output/base-gan-oodp-alpha0.90'
+    path = '../output/base-gan-oodp-alpha0.90_manual'
     data = get_data(path)
     label, score = soft_voting(data)
     print("label")
