@@ -554,7 +554,7 @@ def main(args):
 
         if args.dataset == "smp":
             text_data = processor.get_smp_data_info(data_path)
-            logger.info(text_data)
+            # logger.info(text_data)
             logger.info("train data:")
             logger.info("num:" + str(text_data['train']['num']))
             logger.info("ood:" + str(text_data['train']['ood']))
