@@ -582,6 +582,14 @@ def main(args):
             logger.info('removed manual_knowledge len: ' + str(removed_len))
             logger.info('the number of removed manual_knowledge data: ' + str(previous_len - removed_len))
 
+            # 挖去实体词汇
+        if args.dataset == "smp" and args.remove_entity:
+            logger.info('remove entity in train_dataset')
+            entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
+            # logger.info(entity_processor.compiled)
+            text_train_set, num = entity_processor.remove_smp_entity(text_train_set)
+            logger.info('the number of solved entity data: ' + str(num))
+
         # norm distribution
         if args.alpha != 1.0 and args.dataset == 'smp':
             conf_intveral = processor.get_conf_intveral(text_data['train']['all_len'], args.alpha, logarithm=True)
@@ -595,14 +603,6 @@ def main(args):
             removed_len = len(text_train_set)
             logger.info('removed len: ' + str(removed_len))
             logger.info('the number of removed data: ' + str(previous_len - removed_len))
-
-        # 挖去实体词汇
-        if args.dataset == "smp" and args.remove_entity:
-            logger.info('remove entity in train_dataset')
-            entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
-            # logger.info(entity_processor.compiled)
-            text_train_set, num = entity_processor.remove_smp_entity(text_train_set)
-            logger.info('the number of solved entity data: ' + str(num))
 
         if args.dataset == "smp" and args.minlen != -1:
             logger.info('remove minlen data')
