@@ -573,6 +573,15 @@ def main(args):
             logger.info('remove ood data in train_dataset')
             text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']  # chat is ood data
 
+        if args.dataset == 'smp' and args.manual_knowledge:
+            logger.info('remove manual_knowledge in train_dataset')
+            previous_len = len(text_train_set)
+            logger.info('previous manual_knowledge len: ' + str(previous_len))
+            text_train_set = [sample for sample in text_train_set if sample['knowledge'] == 0]
+            removed_len = len(text_train_set)
+            logger.info('removed manual_knowledge len: ' + str(removed_len))
+            logger.info('the number of removed manual_knowledge data: ' + str(previous_len - removed_len))
+
         # norm distribution
         if args.alpha != 1.0 and args.dataset == 'smp':
             conf_intveral = processor.get_conf_intveral(text_data['train']['all_len'], args.alpha, logarithm=True)
@@ -834,6 +843,9 @@ if __name__ == '__main__':
 
     parser.add_argument('--alpha', default=1.0, type=float,
                         help='Probability of norm distribution.')
+
+    parser.add_argument('--manual_knowledge', action='store_true', default=False,
+                        help='Where to remove manual knowledge in data.')
 
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
