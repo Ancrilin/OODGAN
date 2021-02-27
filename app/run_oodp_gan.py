@@ -582,7 +582,7 @@ def main(args):
             logger.info('removed manual_knowledge len: ' + str(removed_len))
             logger.info('the number of removed manual_knowledge data: ' + str(previous_len - removed_len))
 
-            # 挖去实体词汇
+        # 挖去实体词汇
         if args.dataset == "smp" and args.remove_entity:
             logger.info('remove entity in train_dataset')
             entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
