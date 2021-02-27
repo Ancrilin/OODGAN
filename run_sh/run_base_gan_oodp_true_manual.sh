@@ -22,8 +22,8 @@ for seed in ${seeds} ; do
   --feature_dim=768 \
   --G_z_dim=1024  \
   --manual_knowledge  \
-  --result=base-gan-oodp/base-gan-oodp \
-  --output_dir=base-gan-oodp/base-gan-oodp-smp_${seed}
+  --result=base-gan-oodp-manual/base-gan-oodp-manual \
+  --output_dir=base-gan-oodp-manual/base-gan-oodp-manual-smp_${seed}
 
 done
 exit 0
