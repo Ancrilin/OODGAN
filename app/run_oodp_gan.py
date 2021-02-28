@@ -585,7 +585,10 @@ def main(args):
         # 挖去实体词汇
         if args.dataset == "smp" and args.remove_entity:
             logger.info('remove entity in train_dataset')
-            entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx')
+            if args.entity_mode == 1:
+                entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx', args.entity_mode)
+            else:
+                entity_processor = EntityProcessor('data/smp/entity.json', args.entity_mode)
             # logger.info(entity_processor.compiled)
             text_train_set, num = entity_processor.remove_smp_entity(text_train_set)
             logger.info('the number of solved entity data: ' + str(num))

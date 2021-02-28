@@ -11,11 +11,15 @@ import os
 import pandas as pd
 import ast
 import re
+import json
 
 
 class EntityProcessor:
-    def __init__(self, filepath):
-        self.data = self.load_entity(filepath)
+    def __init__(self, filepath, mode):
+        if mode == 1:
+            self.data = self.load_entity(filepath)
+        else:
+            self.data = self.load_entity_2(filepath)
         self.compiled = []
         self.compile()
 
@@ -30,6 +34,11 @@ class EntityProcessor:
                 if each not in t_data:
                     t_data.append(each)
         return t_data
+
+    def load_entity_2(self, filepath):
+        with open(filepath, 'r', encoding='utf-8') as fp:
+            entity = json.load(fp)
+        return entity
 
     def remove_entity(self, text):
         for line in self.compiled:
