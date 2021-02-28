@@ -840,7 +840,7 @@ if __name__ == '__main__':
     parser.add_argument('--remove_entity', action='store_true', default=False,
                         help='Whether to remove entity in data.')
 
-    parser.add_argument('--args.entity_mode', default=1, type=int)
+    parser.add_argument('--entity_mode', default=1, type=int)
 
     parser.add_argument('--minlen', default=-1, type=int,
                         help='minlen')
