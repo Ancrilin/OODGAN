@@ -24,8 +24,9 @@ for seed in ${seeds} ; do
   --alpha=0.95  \
   --manual_knowledge  \
   --remove_entity \
-  --result=base-gan-oodp-alpha0.95_manual_remove_entity/base-gan-oodp-alpha0.95_manual_remove_entity \
-  --output_dir=base-gan-oodp-alpha0.95_manual_remove_entity/base-gan-oodp-alpha0.95_manual_remove_entity-smp_${seed}
+  --entity_mode=2 \
+  --result=base-gan-oodp-alpha0.95_manual_remove_entity_mode2/base-gan-oodp-alpha0.95_manual_remove_entity_mode2 \
+  --output_dir=base-gan-oodp-alpha0.95_manual_remove_entity_mode2/base-gan-oodp-alpha0.95_manual_remove_entity_mode2-smp_${seed}
 
 done
 exit 0
