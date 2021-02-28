@@ -585,6 +585,7 @@ def main(args):
         # 挖去实体词汇
         if args.dataset == "smp" and args.remove_entity:
             logger.info('remove entity in train_dataset')
+            logger.info('entity mode: ' + str(args.entity_mode))
             if args.entity_mode == 1:
                 entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx', args.entity_mode)
             else:
