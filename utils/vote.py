@@ -14,6 +14,7 @@ import json
 import utils.tools as tools
 import utils.metrics as metrics
 
+
 def get_data(path):
     path_list = os.listdir(path)
     data = []
@@ -42,22 +43,8 @@ def soft_voting(data):
 
 if __name__ == '__main__':
     all_binary_y = np.load('../data/smp/all_binary_y.npy')
-    path_2 = '../output/only-maxlen-oodp/only-maxlen_20-gan_oodp/only-maxlen_20-oodp-smp_123/test_result.npy'
 
-    path_3 = '../output/only-maxlen-oodp/only-maxlen_20-gan_oodp'
-
-    data_1 = [[0.95, 0.85, 0.45], [0.25, 0.15, 0.546], [0.54, 0.78965, 0.6534]]
-    score_1 = [0.9716266989707947, 0.9715043902397156, 0.9709370732307434, 0.9563643336296082]
-    score_2 = [0.9599705934524536, 0.9613510370254517, 0.9614847302436829, 0.8296872973442078]
-    score_1 = np.expand_dims(score_1, axis=1)
-    score_2 = np.expand_dims(score_2, axis=1)
-    print(score_1)
-    print(score_2)
-    score = [score_1, score_2]
-    print(score)
-    print(np.concatenate(score, axis=1))
-
-    path = '../output/base-gan-oodp-alpha0.99_manual'
+    path = '../output/base-gan-oodp-alpha0.99_manual_remove_entity'
     data = get_data(path)
     label, score = soft_voting(data)
     print("label")
