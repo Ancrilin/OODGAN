@@ -855,6 +855,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
     logger = Logger(os.path.join(args.output_dir, 'train.log'))
+    import matplotlib
+    matplotlib.use('Agg')
     main(args)
     if not args.save_model:
         logger.info('Delete model...')
