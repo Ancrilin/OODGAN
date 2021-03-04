@@ -3,10 +3,9 @@
 """
 @author: YuKI
 @contact: 1162236967@qq.com
-@file: run_oodp_gan
-@time: 2021/2/23 16:13
+@file: run_oodp_gan_2
+@time: 2021/3/4 19:43
 """
-
 import argparse
 import os
 import pickle
@@ -20,22 +19,23 @@ from sklearn.manifold import TSNE
 from torch.utils.data.dataloader import DataLoader
 from transformers import BertModel
 from transformers.optimization import AdamW
+from importlib import import_module
 from sklearn.metrics import roc_auc_score
 
+from model.gan_oodp import Discriminator, Generator
 import utils.metrics as metrics
 from config import Config
 from data_utils.dataset import MyDataset
-from model.gan_oodp import Discriminator, Generator
 from logger import Logger
 from utils.metrics import plot_confusion_matrix
-from data_processor.smp_processor import SMP_Processor
-from data_processor.oos_eval_processor import OOS_Eval_Processor
+from processor.oos_processor import OOSProcessor
+from processor.smp_processor import SMPProcessor
+from processor.smp_processor_v2 import SMPProcessor_v2
 from utils.tools import check_manual_seed, save_gan_model, load_gan_model, save_model, load_model, output_cases, EarlyStopping
 from data_processor.entity_processor import EntityProcessor
 from utils.visualization import scatter_plot, my_plot_roc, plot_train_test
 from utils.tools import ErrorRateAt95Recall, save_result, save_feature, std_mean, convert_to_int_by_threshold
 import utils.tools as tools
-
 
 SEED = 123
 freeze_data = dict()
@@ -60,23 +60,20 @@ def check_args(args):
 
 
 def main(args):
-    # 检查参数ars， 及设置Random seed
     logger.info('Checking...')
+    print('torch.cuda.is_available:', torch.cuda.is_available())
+    print('torch.cuda.current_device:', torch.cuda.current_device())
+    logger.info('device: {}'.format(device))
+    logger.info('ood: {}'.format(args.ood))
+    SEED = args.seed
+    gross_result['seed'] = args.seed
+    logger.info('seed: {}'.format(SEED))
+    logger.info('model: {}'.format(args.model))
+    check_manual_seed(SEED)
     check_args(args)
-    check_manual_seed(args.seed)
-    logger.info('Using manual seed: {seed}'.format(seed=args.seed))
-
-    if torch.cuda.is_available():
-        logger.info('The number of GPU: ' + str(torch.cuda.device_count()))
-        logger.info('Running in cuda:' + str(torch.cuda.current_device()) + ' - ' + torch.cuda.get_device_name(0))
-    else:
-        logger.info('Running in cpu.')
-
-    logger.info('device: ' + device)
-
-    logger.info('fake_sample_weight: ' + str(args.fake_sample_weight))
-    logger.info('train_batch_size: ' + str(args.train_batch_size))
-    logger.info('predict_batch_size: ' + str(args.predict_batch_size))
+    logger.info('mode: {}'.format(args.mode))
+    logger.info('maxlen: {}'.format(args.maxlen))
+    logger.info('minlen: {}'.format(args.minlen))
 
     logger.info('Loading config...')
     bert_config = Config('config/bert.ini')
@@ -90,42 +87,45 @@ def main(args):
     data_path = os.path.join(data_config['DataDir'], data_config[args.data_file])  # 把目录和文件名合成一个路径
     label_path = data_path.replace('.json', '.label')
 
-    # with open(data_path, 'r', encoding='utf-8') as fp:
-    #     source = json.load(fp)
-    #     for type in source:
-    #         n = 0
-    #         n_id = 0
-    #         n_ood = 0
-    #         text_len = {}
-    #         for line in source[type]:
-    #             if line['domain'] == 'chat':
-    #                 n_ood += 1
-    #             else:
-    #                 n_id += 1
-    #             n += 1
-    #             text_len[len(line['text'])] = text_len.get(len(line['text']), 0) + 1
-    #         print(type, n)
-    #         print('ood', n_ood)
-    #         print('id', n_id)
-    #         print(sorted(text_len.items(), key=lambda d: d[0], reverse=False))
+    with open(data_path, 'r', encoding='utf-8') as fp:
+        source = json.load(fp)
+        for type in source:
+            n = 0
+            n_id = 0
+            n_ood = 0
+            text_len = {}
+            for line in source[type]:
+                if line['domain'] == 'chat':
+                    n_ood += 1
+                else:
+                    n_id += 1
+                n += 1
+                text_len[len(line['text'])] = text_len.get(len(line['text']), 0) + 1
+            print(type, n)
+            print('ood', n_ood)
+            print('id', n_id)
+            print(sorted(text_len.items(), key=lambda d: d[0], reverse=False))
 
-    # 实例化数据处理类
-    if args.dataset == 'smp':
-        processor = SMP_Processor(bert_config, maxlen=32)
+    if args.dataset == 'oos-eval':
+        processor = OOSProcessor(bert_config, maxlen=32)
+    elif args.dataset == 'smp':
+        if args.mode == -1:
+            processor = SMPProcessor(bert_config, maxlen=32)
+            print('processor')
+        else:
+            processor = SMPProcessor_v2(bert_config, maxlen=32)
+            print('processor_v2')
     else:
-        processor = OOS_Eval_Processor(bert_config, maxlen=32)
+        raise ValueError('The dataset {} is not supported.'.format(args.dataset))
 
     processor.load_label(label_path)  # Adding label_to_id and id_to_label ot processor.
 
     n_class = len(processor.id_to_label)
     print('label: ', processor.id_to_label)
-    # config = vars(args)  # 返回参数字典
-    config = args.__dict__
+    config = vars(args)  # 返回参数字典
     config['gan_save_path'] = os.path.join(args.output_dir, 'save', 'gan.pt')
     config['bert_save_path'] = os.path.join(args.output_dir, 'save', 'bert.pt')
     config['n_class'] = n_class
-
-    logger.info('BertPreTrainModelDir: ' + bert_config['PreTrainModelDir'])
 
     logger.info('config:')
     logger.info(config)
@@ -179,8 +179,6 @@ def main(args):
         all_features = []
         result = dict()
 
-        iteration = 0
-
         for i in range(args.n_epoch):
 
             # Initialize model state
@@ -208,7 +206,7 @@ def main(args):
                 fake_label = FloatTensor(batch, 1).fill_(0.0).detach()
 
                 optimizer_E.zero_grad()
-                sequence_output, pooled_output = E(token, mask, type_ids, return_dict=False)
+                sequence_output, pooled_output = E(token, mask, type_ids)
                 real_feature = pooled_output
 
                 # train D on real
@@ -227,10 +225,14 @@ def main(args):
                     all_features.append(real_f_vector.detach())
 
                 # # train D on fake
-                z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
+                if args.model == 'lstm_gan' or args.model == 'cnn_gan':
+                    z = FloatTensor(np.random.normal(0, 1, (batch, 32, args.G_z_dim))).to(device)
+                else:
+                    z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
                 fake_feature = G(z).detach()
                 fake_discriminator_output = D.detect_only(fake_feature)
-                fake_loss = args.fake_sample_weight * adversarial_loss(fake_discriminator_output, fake_label)
+                # fake_loss = args.beta * adversarial_loss(fake_discriminator_output, fake_label)
+                fake_loss = adversarial_loss(fake_discriminator_output, fake_label)
                 fake_loss.backward()
                 optimizer_D.step()
 
@@ -239,7 +241,10 @@ def main(args):
 
                 # train G
                 optimizer_G.zero_grad()
-                z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
+                if args.model == 'lstm_gan' or args.model == 'cnn_gan':
+                    z = FloatTensor(np.random.normal(0, 1, (batch, 32, args.G_z_dim))).to(device)
+                else:
+                    z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
                 fake_f_vector, D_decision = D.detect_only(G(z), return_feature=True)
                 gd_loss = adversarial_loss(D_decision, valid_label)
                 fm_loss = torch.abs(torch.mean(real_f_vector.detach(), 0) - torch.mean(fake_f_vector, 0)).mean()
@@ -267,8 +272,6 @@ def main(args):
             G_total_train_loss.append(G_train_loss / n_sample)
             FM_total_train_loss.append(FM_train_loss / n_sample)
 
-            iteration += 1
-
             if dev_dataset:
                 # logger.info('#################### eval result at step {} ####################'.format(global_step))
                 eval_result = eval(dev_dataset)
@@ -292,13 +295,13 @@ def main(args):
                         save_model(E, path=config['bert_save_path'], model_name='bert')
 
                 # logger.info(eval_result)
-                logger.info('valid_eer: {}'.format(eval_result['eer']))
-                logger.info('valid_oos_ind_precision: {}'.format(eval_result['oos_ind_precision']))
-                logger.info('valid_oos_ind_recall: {}'.format(eval_result['oos_ind_recall']))
-                logger.info('valid_oos_ind_f_score: {}'.format(eval_result['oos_ind_f_score']))
-                logger.info('valid_auc: {}'.format(eval_result['auc']))
-                logger.info(
-                    'valid_fpr95: {}'.format(ErrorRateAt95Recall(eval_result['all_binary_y'], eval_result['y_score'])))
+                # logger.info('valid_eer: {}'.format(eval_result['eer']))
+                # logger.info('valid_oos_ind_precision: {}'.format(eval_result['oos_ind_precision']))
+                # logger.info('valid_oos_ind_recall: {}'.format(eval_result['oos_ind_recall']))
+                # logger.info('valid_oos_ind_f_score: {}'.format(eval_result['oos_ind_f_score']))
+                # logger.info('valid_auc: {}'.format(eval_result['auc']))
+                # logger.info(
+                #     'valid_fpr95: {}'.format(ErrorRateAt95Recall(eval_result['all_binary_y'], eval_result['y_score'])))
 
         if args.patience >= args.n_epoch:
             save_gan_model(D, G, config['gan_save_path'])
@@ -316,17 +319,6 @@ def main(args):
         freeze_data['valid_oos_ind_f_score'] = valid_oos_ind_f_score
 
         best_dev = -early_stopping.best_score
-
-        from utils.visualization import draw_curve
-        draw_curve(D_total_fake_loss, iteration, 'D_total_fake_loss', args.output_dir)
-        draw_curve(D_total_real_loss, iteration, 'D_total_real_loss', args.output_dir)
-        draw_curve(D_total_class_loss, iteration, 'D_total_class_loss', args.output_dir)
-        draw_curve(G_total_train_loss, iteration, 'G_total_train_loss', args.output_dir)
-        draw_curve(FM_total_train_loss, iteration, 'FM_total_train_loss', args.output_dir)
-
-        if dev_dataset:
-            draw_curve(valid_detection_loss, iteration, 'valid_detection_loss', args.output_dir)
-            # draw_curve(valid_ind_class_acc, iteration, 'valid_ind_class_accuracy', args.output_dir)
 
         if args.do_vis:
             all_features = torch.cat(all_features, 0).cpu().numpy()
@@ -358,7 +350,7 @@ def main(args):
             # BERT encode sentence to feature vector
 
             with torch.no_grad():
-                sequence_output, pooled_output = E(token, mask, type_ids, return_dict=False)
+                sequence_output, pooled_output = E(token, mask, type_ids)
                 real_feature = pooled_output
 
                 # 大于2表示除了训练判别器还要训练分类器
@@ -394,13 +386,10 @@ def main(args):
 
         # report
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(all_detection_binary_preds, all_binary_y)
-        detection_acc = metrics.accuracy(all_binary_y, all_detection_binary_preds)
+        detection_acc = metrics.accuracy(all_detection_binary_preds, all_binary_y)
 
         y_score = all_detection_preds.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
-        fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
-
-        report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
 
         result['eer'] = eer
         result['all_detection_binary_preds'] = all_detection_binary_preds
@@ -410,12 +399,7 @@ def main(args):
         result['oos_ind_recall'] = oos_ind_recall
         result['oos_ind_f_score'] = oos_ind_fscore
         result['y_score'] = y_score
-        # print("all_binary_y", all_binary_y)
-        # print("y_score", y_score)
         result['auc'] = roc_auc_score(all_binary_y, y_score)
-        result['fpr95'] = fpr95
-        result['accuracy'] = metrics.binary_accuracy(all_detection_binary_preds, all_binary_y)
-        result['report'] = report
         if n_class > 2:
             result['class_loss'] = class_loss
             result['class_acc'] = class_acc
@@ -457,7 +441,7 @@ def main(args):
             # BERT encode sentence to feature vector
 
             with torch.no_grad():
-                sequence_output, pooled_output = E(token, mask, type_ids, return_dict=False)
+                sequence_output, pooled_output = E(token, mask, type_ids)
                 real_feature = pooled_output
 
                 # 大于2表示除了训练判别器还要训练分类器
@@ -479,7 +463,7 @@ def main(args):
         all_detection_binary_preds = convert_to_int_by_threshold(all_detection_preds.squeeze())  # [length, 1]
 
         # 计算损失
-        detection_loss = detection_loss(all_detection_preds.squeeze(), all_binary_y.float())
+        detection_loss = detection_loss(all_detection_preds, all_binary_y.float())
         result['detection_loss'] = detection_loss
 
         if n_class > 2:
@@ -493,18 +477,15 @@ def main(args):
 
         # report
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(all_detection_binary_preds, all_binary_y)
-        detection_acc = metrics.accuracy(all_binary_y, all_detection_binary_preds)
+        detection_acc = metrics.accuracy(all_detection_binary_preds, all_binary_y)
 
         y_score = all_detection_preds.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
-        fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
-
-        report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
 
         result['eer'] = eer
         result['all_detection_binary_preds'] = all_detection_binary_preds
         result['detection_acc'] = detection_acc
-        result['all_binary_y'] = all_binary_y.tolist()
+        result['all_binary_y'] = all_binary_y
         result['all_y'] = all_y
         result['oos_ind_precision'] = oos_ind_precision
         result['oos_ind_recall'] = oos_ind_recall
@@ -512,10 +493,6 @@ def main(args):
         result['score'] = y_score
         result['y_score'] = y_score
         result['auc'] = roc_auc_score(all_binary_y, y_score)
-        result['fpr95'] = fpr95
-        result['accuracy'] = metrics.binary_accuracy(all_detection_binary_preds, all_binary_y)
-        result['report'] = report
-        result['all_detection_preds'] = y_score
         if n_class > 2:
             result['class_loss'] = class_loss
             result['class_acc'] = class_acc
@@ -540,7 +517,10 @@ def main(args):
         with torch.no_grad():
             while start < num_output:
                 end = min(num_output, start + batch)
-                z = FloatTensor(np.random.normal(0, 1, size=(end - start, args.G_z_dim)))
+                if args.model == 'lstm_gan' or args.model == 'cnn_gan':
+                    z = FloatTensor(np.random.normal(0, 1, size=(end - start, 32, args.G_z_dim)))
+                else:
+                    z = FloatTensor(np.random.normal(0, 1, size=(end - start, args.G_z_dim)))
                 fake_feature = G(z)
                 f_vector, _ = D.detect_only(fake_feature, return_feature=True)
                 fake_features.append(f_vector)
@@ -548,99 +528,54 @@ def main(args):
             return torch.cat(fake_features, 0).cpu().numpy()
 
     if args.do_train:
-        text_train_set = processor.read_dataset(data_path, ['train'])
-        text_dev_set = processor.read_dataset(data_path, ['val'])
-
-        if args.dataset == "smp":
-            text_data = processor.get_smp_data_info(data_path)
-            # logger.info(text_data)
-            logger.info("train data:")
-            logger.info("num:" + str(text_data['train']['num']))
-            logger.info("ood:" + str(text_data['train']['ood']))
-            logger.info("id:" + str(text_data['train']['id']))
-            logger.info("valid data:")
-            logger.info("num:" + str(text_data['val']['num']))
-            logger.info("ood:" + str(text_data['val']['ood']))
-            logger.info("id:" + str(text_data['val']['id']))
-            logger.info("test data:")
-            logger.info("num:" + str(text_data['test']['num']))
-            logger.info("ood: " + str(text_data['test']['ood']))
-            logger.info("id: " + str(text_data['test']['id']))
-
-        # 去除训练集中的ood数据
-        if args.dataset == "smp" and args.remove_oodp:
-            logger.info('remove ood data in train_dataset')
-            text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']  # chat is ood data
-
-        if args.dataset == 'smp' and args.manual_knowledge:
-            logger.info('remove manual_knowledge in train_dataset')
-            previous_len = len(text_train_set)
-            logger.info('previous manual_knowledge len: ' + str(previous_len))
-            text_train_set = [sample for sample in text_train_set if sample['knowledge'] == 0]
-            removed_len = len(text_train_set)
-            logger.info('removed manual_knowledge len: ' + str(removed_len))
-            logger.info('the number of removed manual_knowledge data: ' + str(previous_len - removed_len))
-
-        # 挖去实体词汇
-        if args.dataset == "smp" and args.remove_entity:
-            logger.info('remove entity in train_dataset')
-            logger.info('entity mode: ' + str(args.entity_mode))
-            if args.entity_mode == 1:
-                entity_processor = EntityProcessor('data/smp/训练集 全知识标记.xlsx', args.entity_mode)
+        if config['data_file'].startswith('binary'):
+            if args.mode != -1:
+                text_train_set, text_train_len = processor.read_dataset(data_path, ['train'], args.mode, args.maxlen, args.minlen)
+                text_dev_set, text_dev_len = processor.read_dataset(data_path, ['val'], args.mode, args.maxlen, args.minlen)
+                print('--------------')
+                print('text_train_set', text_train_set)
+                print('text_train_len', text_train_len)
+                print('text_dev_set', text_dev_set)
+                print('text_dev_len', text_dev_len)
             else:
-                entity_processor = EntityProcessor('data/smp/entity.json', args.entity_mode)
-            # logger.info(entity_processor.compiled)
-            text_train_set, num = entity_processor.remove_smp_entity(text_train_set)
-            logger.info('the number of solved entity data: ' + str(num))
+                print('==============')
+                text_train_set = processor.read_dataset(data_path, ['train'])
+                text_dev_set = processor.read_dataset(data_path, ['val'])
 
-        # norm distribution
-        if args.alpha != 1.0 and args.dataset == 'smp':
-            conf_intveral = processor.get_conf_intveral(text_data['train']['all_len'], args.alpha, logarithm=True)
-            logger.info('alpha: ' + str(args.alpha))
-            logger.info('conf_intveral: ' + str(conf_intveral))
-            logger.info('remove data')
-            previous_len = len(text_train_set)
-            logger.info('previous len: ' + str(previous_len))
-            text_train_set = processor.remove_minlen(dataset=text_train_set, minlen=conf_intveral[0])
-            text_train_set = processor.remove_maxlen(dataset=text_train_set, maxlen=conf_intveral[1])
-            removed_len = len(text_train_set)
-            logger.info('removed len: ' + str(removed_len))
-            logger.info('the number of removed data: ' + str(previous_len - removed_len))
+        elif config['dataset'] == 'oos-eval':
+            text_train_set = processor.read_dataset(data_path, ['train', 'oos_train'])
+            text_dev_set = processor.read_dataset(data_path, ['val', 'oos_val'])
+        elif config['dataset'] == 'smp':
+            text_train_set, text_train_len = processor.read_dataset(data_path, ['train'])
+            text_dev_set, text_dev_len = processor.read_dataset(data_path, ['val'])
 
-        if args.dataset == "smp" and args.minlen != -1:
-            logger.info('remove minlen data')
-            logger.info('minlen: ' + str(args.minlen))
-            previous_len = len(text_train_set)
-            logger.info('previous len: ' + str(previous_len))
-            text_train_set = processor.remove_minlen(dataset=text_train_set, minlen=args.minlen)
-            removed_len = len(text_train_set)
-            logger.info('removed len: ' + str(removed_len))
-            logger.info('the number of removed minlen data: ' + str(previous_len - removed_len))
-
-        if args.dataset == "smp" and args.maxlen != -1:
-            logger.info('remove maxlen data')
-            logger.info('maxlen: ' + str(args.maxlen))
-            previous_len = len(text_train_set)
-            logger.info('previous len: ' + str(previous_len))
-            text_train_set = processor.remove_maxlen(dataset=text_train_set, maxlen=args.maxlen)
-            removed_len = len(text_train_set)
-            logger.info('removed len: ' + str(removed_len))
-            logger.info('the number of removed maxlen data: ' + str(previous_len - removed_len))
-
-
+        if args.ood:
+            text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']
         train_features = processor.convert_to_ids(text_train_set)
         train_dataset = MyDataset(train_features)
         dev_features = processor.convert_to_ids(text_dev_set)
         dev_dataset = MyDataset(dev_features)
 
-        train(train_dataset, dev_dataset)
+        train_result = train(train_dataset, dev_dataset)
+        # save_feature(train_result['all_features'], os.path.join(args.output_dir, 'train_feature'))
 
 
     if args.do_eval:
         logger.info('#################### eval result at step {} ####################'.format(global_step))
-        text_dev_set = processor.read_dataset(data_path, ['val'])
-        dev_features = processor.convert_to_ids(text_dev_set)
-        dev_dataset = MyDataset(dev_features)
+        if config['data_file'].startswith('binary'):
+            if args.mode != -1:
+                text_dev_set, text_dev_len = processor.read_dataset(data_path, ['val'], args.mode, args.maxlen, args.minlen)
+                print('--------------')
+                print('text_dev_set', text_dev_set)
+                print('text_dev_len', text_dev_len)
+            else:
+                print('==============')
+                text_dev_set = processor.read_dataset(data_path, ['val'])
+        elif config['dataset'] == 'oos-eval':
+            text_dev_set = processor.read_dataset(data_path, ['val', 'oos_val'])
+        elif config['dataset'] == 'smp':
+            text_dev_set = processor.read_dataset(data_path, ['val'])
+
 
         dev_features = processor.convert_to_ids(text_dev_set)
         dev_dataset = MyDataset(dev_features)
@@ -651,10 +586,8 @@ def main(args):
         logger.info('eval_oos_ind_recall: {}'.format(eval_result['oos_ind_recall']))
         logger.info('eval_oos_ind_f_score: {}'.format(eval_result['oos_ind_f_score']))
         logger.info('eval_auc: {}'.format(eval_result['auc']))
-        logger.info('eval_fpr95: {}'.format(eval_result['fpr95']))
-        logger.info('eval_accuracy: {}'.format(eval_result['accuracy']))
-        logger.info('\n' + eval_result['report'])
-
+        logger.info(
+            'eval_fpr95: {}'.format(ErrorRateAt95Recall(eval_result['all_binary_y'], eval_result['y_score'])))
         gross_result['eval_oos_ind_precision'] = eval_result['oos_ind_precision']
         gross_result['eval_oos_ind_recall'] = eval_result['oos_ind_recall']
         gross_result['eval_oos_ind_f_score'] = eval_result['oos_ind_f_score']
@@ -664,22 +597,33 @@ def main(args):
 
     if args.do_test:
         logger.info('#################### test result at step {} ####################'.format(global_step))
-        text_test_set = processor.read_dataset(data_path, ['test'])
+        if config['data_file'].startswith('binary'):
+            if args.mode != -1:
+                text_test_set, text_test_len = processor.read_dataset(data_path, ['test'], 0, -1, -1)
+                print('--------------')
+                print('text_test_len', text_test_len)
+            else:
+                print('==============')
+                text_test_set = processor.read_dataset(data_path, ['test'])
+        elif config['dataset'] == 'oos-eval':
+            text_test_set = processor.read_dataset(data_path, ['test', 'oos_test'])
+        elif config['dataset'] == 'smp':
+            text_test_set = processor.read_dataset(data_path, ['test'])
+
         test_features = processor.convert_to_ids(text_test_set)
         test_dataset = MyDataset(test_features)
         test_result = test(test_dataset)
         # logger.info(test_result)
         logger.info('test_eer: {}'.format(test_result['eer']))
-        logger.info('test_oos_ind_precision: {}'.format(test_result['oos_ind_precision']))
-        logger.info('test_oos_ind_recall: {}'.format(test_result['oos_ind_recall']))
-        logger.info('test_oos_ind_f_score: {}'.format(test_result['oos_ind_f_score']))
+        logger.info('test_ood_ind_precision: {}'.format(test_result['oos_ind_precision']))
+        logger.info('test_ood_ind_recall: {}'.format(test_result['oos_ind_recall']))
+        logger.info('test_ood_ind_f_score: {}'.format(test_result['oos_ind_f_score']))
         logger.info('test_auc: {}'.format(test_result['auc']))
-        logger.info('test_fpr95: {}'.format(test_result['fpr95']))
-        logger.info('test_accuracy: {}'.format(test_result['accuracy']))
-        logger.info('\n' + test_result['report'])
-
+        logger.info('test_fpr95: {}'.format(ErrorRateAt95Recall(test_result['all_binary_y'], test_result['y_score'])))
+        my_plot_roc(test_result['all_binary_y'], test_result['y_score'],
+                    os.path.join(args.output_dir, 'roc_curve.png'))
         save_result(test_result, os.path.join(args.output_dir, 'test_result'))
-
+        # save_feature(test_result['all_features'], os.path.join(args.output_dir, 'test_feature'))
         gross_result['test_oos_ind_precision'] = test_result['oos_ind_precision']
         gross_result['test_oos_ind_recall'] = test_result['oos_ind_recall']
         gross_result['test_oos_ind_f_score'] = test_result['oos_ind_f_score']
@@ -695,10 +639,8 @@ def main(args):
         else:
             raise ValueError('The dataset {} is not supported.'.format(args.dataset))
 
-        # output_cases(texts, test_result['all_binary_y'], test_result['all_detection_binary_preds'],
-        #              os.path.join(args.output_dir, 'test_cases.csv'), processor)
-        output_cases(texts, test_result['all_y'], test_result['all_detection_binary_preds'],
-                     os.path.join(args.output_dir, 'test_cases.csv'), processor, test_result['all_detection_preds'])
+        output_cases(texts, test_result['all_binary_y'], test_result['all_detection_binary_preds'],
+                     os.path.join(args.output_dir, 'test_cases.csv'), processor)
 
         # confusion matrix
         plot_confusion_matrix(test_result['all_binary_y'], test_result['all_detection_binary_preds'],
@@ -744,14 +686,14 @@ def main(args):
                             })
     df.to_csv(os.path.join(config['output_dir'], 'test_score.csv'))
 
-    gross_result['seed'] = args.seed
     if args.result != 'no':
         pd_result = pd.DataFrame(gross_result)
         if args.seed == 16:
             pd_result.to_csv(args.result + '_gross_result.csv', index=False)
         else:
             pd_result.to_csv(args.result + '_gross_result.csv', index=False, mode='a', header=False)
-        if args.seed == 35085:
+        if args.seed == 8192:
+            print(args.result)
             std_mean(args.result + '_gross_result.csv')
 
 
@@ -817,46 +759,24 @@ if __name__ == '__main__':
 
     parser.add_argument('--D_lr', type=float, default=1e-5, help="Learning rate for Discriminator.")
     parser.add_argument('--G_lr', type=float, default=1e-5, help="Learning rate for Generator.")
+    parser.add_argument('--beta', type=float, default=0.1, help="Weight of fake sample loss for Discriminator.")
+
     parser.add_argument('--bert_lr', type=float, default=2e-4, help="Learning rate for Generator.")
-
-    parser.add_argument('--fake_sample_weight', type=float, default=1.0,
-                        help="Weight of fake sample loss for Discriminator.")
-
     parser.add_argument('--fine_tune', action='store_true',
                         help='Whether to fine tune BERT during training.')
     parser.add_argument('--seed', type=int, default=123, help='seed')
+    parser.add_argument('--model', type=str, required=True,
+                        choices={'gan', 'dgan', 'lstm_gan', 'cnn_gan'},
+                        help='choose gan model')
 
     # data config
-
+    parser.add_argument('--mode', type=int, default=-1)
+    parser.add_argument('--maxlen', type=int, default=-1)
+    parser.add_argument('--minlen', type=int, default=-1)
     parser.add_argument('--result', type=str, default="no")
-
-    parser.add_argument('--save_model', action='store_true', default=False,
-                        help='Whether to save model.')
-
-    parser.add_argument('--remove_oodp', action='store_true', default=False,
-                        help='Whether to remove ood data.')
-
-    parser.add_argument('--remove_entity', action='store_true', default=False,
-                        help='Whether to remove entity in data.')
-
-    parser.add_argument('--entity_mode', default=1, type=int)
-
-    parser.add_argument('--minlen', default=-1, type=int,
-                        help='minlen')
-    parser.add_argument('--maxlen', default=-1, type=int,
-                        help='maxlen')
-
-    parser.add_argument('--alpha', default=1.0, type=float,
-                        help='Probability of norm distribution.')
-
-    parser.add_argument('--manual_knowledge', action='store_true', default=False,
-                        help='Where to remove manual knowledge in data.')
+    parser.add_argument('--ood', action='store_true', default=False)
 
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
     logger = Logger(os.path.join(args.output_dir, 'train.log'))
     main(args)
-    if not args.save_model:
-        logger.info('Delete model...')
-        tools.removeDir(os.path.join(args.output_dir, 'save',))
-    logger.info('Ending')
