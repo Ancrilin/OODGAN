@@ -654,8 +654,8 @@ def main(args):
         text_dev_set = processor.read_dataset(data_path, ['val'])
 
         if args.dataset == 'smp' and args.stopwords:
-            logger.info('dev stopwords: ' + str(args.stopwords))
-            logger.info('dev remove_punctuation: ' + str(args.remove_punctuation))
+            # logger.info('dev stopwords: ' + str(args.stopwords))
+            # logger.info('dev remove_punctuation: ' + str(args.remove_punctuation))
             sw_path = 'data/smp/stopwords/hit_stopwords.txt'
             text_dev_set = smp_psw(text_dev_set, sw_path, args.remove_punctuation)
 
