@@ -5,3 +5,4 @@ transformers==4.2.0
 scikit_learn==0.22.2
 torch
 torchvision
+jieba
