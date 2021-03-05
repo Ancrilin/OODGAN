@@ -35,6 +35,7 @@ from data_processor.entity_processor import EntityProcessor
 from utils.visualization import scatter_plot, my_plot_roc, plot_train_test
 from utils.tools import ErrorRateAt95Recall, save_result, save_feature, std_mean, convert_to_int_by_threshold
 import utils.tools as tools
+from data_processor.psw_processor import smp_psw
 
 
 SEED = 123
@@ -572,6 +573,18 @@ def main(args):
             logger.info('remove ood data in train_dataset')
             text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']  # chat is ood data
 
+        if args.dataset == 'smp' and args.stopwords:
+            logger.info('train stopwords: ' + str(args.stopwords))
+            logger.info('train remove_punctuation: ' + str(args.remove_punctuation))
+            sw_path = 'data/smp/stopwords/hit_stopwords.txt'
+            text_train_set = smp_psw(text_train_set, sw_path, args.remove_punctuation)
+
+        if args.dataset == 'smp' and args.stopwords:
+            logger.info('dev stopwords: ' + str(args.stopwords))
+            logger.info('dev remove_punctuation: ' + str(args.remove_punctuation))
+            sw_path = 'data/smp/stopwords/hit_stopwords.txt'
+            text_dev_set = smp_psw(text_dev_set, sw_path, args.remove_punctuation)
+
         if args.dataset == 'smp' and args.manual_knowledge:
             logger.info('remove manual_knowledge in train_dataset')
             previous_len = len(text_train_set)
@@ -639,6 +652,13 @@ def main(args):
     if args.do_eval:
         logger.info('#################### eval result at step {} ####################'.format(global_step))
         text_dev_set = processor.read_dataset(data_path, ['val'])
+
+        if args.dataset == 'smp' and args.stopwords:
+            logger.info('dev stopwords: ' + str(args.stopwords))
+            logger.info('dev remove_punctuation: ' + str(args.remove_punctuation))
+            sw_path = 'data/smp/stopwords/hit_stopwords.txt'
+            text_dev_set = smp_psw(text_dev_set, sw_path, args.remove_punctuation)
+
         dev_features = processor.convert_to_ids(text_dev_set)
         dev_dataset = MyDataset(dev_features)
 
@@ -665,6 +685,13 @@ def main(args):
     if args.do_test:
         logger.info('#################### test result at step {} ####################'.format(global_step))
         text_test_set = processor.read_dataset(data_path, ['test'])
+
+        if args.dataset == 'smp' and args.stopwords:
+            logger.info('test stopwords: ' + str(args.stopwords))
+            logger.info('test remove_punctuation: ' + str(args.remove_punctuation))
+            sw_path = 'data/smp/stopwords/hit_stopwords.txt'
+            text_test_set = smp_psw(text_test_set, sw_path, args.remove_punctuation)
+
         test_features = processor.convert_to_ids(text_test_set)
         test_dataset = MyDataset(test_features)
         test_result = test(test_dataset)
@@ -851,6 +878,12 @@ if __name__ == '__main__':
 
     parser.add_argument('--manual_knowledge', action='store_true', default=False,
                         help='Where to remove manual knowledge in data.')
+
+    parser.add_argument('--stopwords', action='store_true', default=False,
+                        help='Where to remove stopwords.')
+
+    parser.add_argument('--remove_punctuation', action='store_true', default=False,
+                        help='Where to remove punctuation.')
 
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
