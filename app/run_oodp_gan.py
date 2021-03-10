@@ -615,7 +615,7 @@ def main(args):
         if args.alpha != 1.0:
             conf_intveral = processor.get_conf_intveral(text_data['train']['all_len'], args.alpha, logarithm=args.logarithm)
             logger.info('alpha: ' + str(args.alpha))
-            logger.info('logarithm' + str(args.logarithm))
+            logger.info('logarithm: ' + str(args.logarithm))
             logger.info('conf_intveral: ' + str(conf_intveral))
             logger.info('remove data')
             previous_len = len(text_train_set)
