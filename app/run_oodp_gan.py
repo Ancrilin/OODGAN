@@ -42,7 +42,7 @@ SEED = 123
 freeze_data = dict()
 best_dev = -1
 gross_result = {}
-gross_result['type'] = ['ind', 'oos']
+gross_result['type'] = ['oos', 'ind']
 
 if torch.cuda.is_available():
     device = 'cuda'
