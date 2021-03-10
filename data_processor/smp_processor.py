@@ -174,3 +174,8 @@ if __name__ == '__main__':
     print(processor.id_to_label)
     print(processor.parse_line({'text':"不是吧", 'domain':'chat'}))
     print(bertConfig.hidden_size)
+    file_path = 'data/smp/true_smp_full.json'
+    data = processor.get_smp_data_info(file_path)
+    print(data['train'])
+    print(data['val'])
+    print(data['test'])

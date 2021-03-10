@@ -613,8 +613,9 @@ def main(args):
 
         # norm distribution
         if args.alpha != 1.0:
-            conf_intveral = processor.get_conf_intveral(text_data['train']['all_len'], args.alpha, logarithm=True)
+            conf_intveral = processor.get_conf_intveral(text_data['train']['all_len'], args.alpha, logarithm=args.logarithm)
             logger.info('alpha: ' + str(args.alpha))
+            logger.info('logarithm' + str(args.logarithm))
             logger.info('conf_intveral: ' + str(conf_intveral))
             logger.info('remove data')
             previous_len = len(text_train_set)
@@ -881,13 +882,13 @@ if __name__ == '__main__':
                         help='Probability of norm distribution.')
 
     parser.add_argument('--manual_knowledge', action='store_true', default=False,
-                        help='Where to remove manual knowledge in data.')
-
-    parser.add_argument('--stopwords', action='store_true', default=False,
-                        help='Where to remove stopwords.')
+                        help='Whether to remove manual knowledge in data.')
 
     parser.add_argument('--remove_punctuation', action='store_true', default=False,
-                        help='Where to remove punctuation.')
+                        help='Whether to remove punctuation.')
+
+    parser.add_argument('--logarithm', action='store_false', default=True,
+                        help='Whether to logarithm.')
 
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
