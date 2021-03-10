@@ -552,33 +552,38 @@ def main(args):
         text_train_set = processor.read_dataset(data_path, ['train'])
         text_dev_set = processor.read_dataset(data_path, ['val'])
 
-        if args.dataset == "smp":
+        if args.dataset == 'smp':
             text_data = processor.get_smp_data_info(data_path)
-            # logger.info(text_data)
-            logger.info("train data:")
-            logger.info("num:" + str(text_data['train']['num']))
-            logger.info("ood:" + str(text_data['train']['ood']))
-            logger.info("id:" + str(text_data['train']['id']))
-            logger.info("valid data:")
-            logger.info("num:" + str(text_data['val']['num']))
-            logger.info("ood:" + str(text_data['val']['ood']))
-            logger.info("id:" + str(text_data['val']['id']))
-            logger.info("test data:")
-            logger.info("num:" + str(text_data['test']['num']))
-            logger.info("ood: " + str(text_data['test']['ood']))
-            logger.info("id: " + str(text_data['test']['id']))
+        if args.dataset == 'oos-eval':
+            text_data = processor.get_oos_data_info(data_path)
+        logger.info("train data:")
+        logger.info("num:" + str(text_data['train']['num']))
+        logger.info("ood:" + str(text_data['train']['ood']))
+        logger.info("id:" + str(text_data['train']['id']))
+        logger.info("valid data:")
+        logger.info("num:" + str(text_data['val']['num']))
+        logger.info("ood:" + str(text_data['val']['ood']))
+        logger.info("id:" + str(text_data['val']['id']))
+        logger.info("test data:")
+        logger.info("num:" + str(text_data['test']['num']))
+        logger.info("ood: " + str(text_data['test']['ood']))
+        logger.info("id: " + str(text_data['test']['id']))
 
         # 去除训练集中的ood数据
         if args.dataset == "smp" and args.remove_oodp:
             logger.info('remove ood data in train_dataset')
             text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']  # chat is ood data
 
+        if args.dataset == "oos-eval" and args.remove_oodp:
+            logger.info('remove ood data in train_dataset')
+            text_train_set = [sample for sample in text_train_set if sample[1] != 'oos']  # oos is ood data
+
+        # 去停用词，标点符号
         if args.dataset == 'smp' and args.stopwords:
             logger.info('train stopwords: ' + str(args.stopwords))
             logger.info('train remove_punctuation: ' + str(args.remove_punctuation))
             sw_path = 'data/smp/stopwords/hit_stopwords.txt'
             text_train_set = smp_psw(text_train_set, sw_path, args.remove_punctuation)
-
         if args.dataset == 'smp' and args.stopwords:
             logger.info('dev stopwords: ' + str(args.stopwords))
             logger.info('dev remove_punctuation: ' + str(args.remove_punctuation))
@@ -607,7 +612,7 @@ def main(args):
             logger.info('the number of solved entity data: ' + str(num))
 
         # norm distribution
-        if args.alpha != 1.0 and args.dataset == 'smp':
+        if args.alpha != 1.0:
             conf_intveral = processor.get_conf_intveral(text_data['train']['all_len'], args.alpha, logarithm=True)
             logger.info('alpha: ' + str(args.alpha))
             logger.info('conf_intveral: ' + str(conf_intveral))
@@ -653,14 +658,12 @@ def main(args):
         logger.info('#################### eval result at step {} ####################'.format(global_step))
         text_dev_set = processor.read_dataset(data_path, ['val'])
 
+        # 去停用词，标点符号
         if args.dataset == 'smp' and args.stopwords:
             # logger.info('dev stopwords: ' + str(args.stopwords))
             # logger.info('dev remove_punctuation: ' + str(args.remove_punctuation))
             sw_path = 'data/smp/stopwords/hit_stopwords.txt'
             text_dev_set = smp_psw(text_dev_set, sw_path, args.remove_punctuation)
-
-        dev_features = processor.convert_to_ids(text_dev_set)
-        dev_dataset = MyDataset(dev_features)
 
         dev_features = processor.convert_to_ids(text_dev_set)
         dev_dataset = MyDataset(dev_features)
@@ -686,6 +689,7 @@ def main(args):
         logger.info('#################### test result at step {} ####################'.format(global_step))
         text_test_set = processor.read_dataset(data_path, ['test'])
 
+        # 去停用词，标点符号
         if args.dataset == 'smp' and args.stopwords:
             logger.info('test stopwords: ' + str(args.stopwords))
             logger.info('test remove_punctuation: ' + str(args.remove_punctuation))
