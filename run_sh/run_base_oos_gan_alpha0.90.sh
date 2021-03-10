@@ -20,7 +20,7 @@ for seed in ${seeds} ; do
   --do_test \
   --do_vis \
   --G_z_dim=1024  \
-  -alpha=0.90 \
+  --alpha=0.90 \
   --logarithm \
   --result=base-oos-gan-alpha0.90/base-oos-gan-alpha0.90 \
   --output_dir=base-oos-gan-alpha0.90/base-oos-gan-alpha0.90_${seed}
