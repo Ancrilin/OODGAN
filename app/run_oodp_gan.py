@@ -75,7 +75,7 @@ def main(args):
 
     logger.info('device: ' + device)
 
-    logger.info('fake_sample_weight: ' + str(args.fake_sample_weight))
+    logger.info('pseudo_sample_weight: ' + str(args.pseudo_sample_weight))
     logger.info('train_batch_size: ' + str(args.train_batch_size))
     logger.info('predict_batch_size: ' + str(args.predict_batch_size))
 
@@ -231,7 +231,7 @@ def main(args):
                 z = FloatTensor(np.random.normal(0, 1, (batch, args.G_z_dim))).to(device)
                 fake_feature = G(z).detach()
                 fake_discriminator_output = D.detect_only(fake_feature)
-                fake_loss = args.fake_sample_weight * adversarial_loss(fake_discriminator_output, fake_label)
+                fake_loss = args.pseudo_sample_weight * adversarial_loss(fake_discriminator_output, fake_label)
                 fake_loss.backward()
                 optimizer_D.step()
 
@@ -851,7 +851,7 @@ if __name__ == '__main__':
     parser.add_argument('--G_lr', type=float, default=1e-5, help="Learning rate for Generator.")
     parser.add_argument('--bert_lr', type=float, default=2e-4, help="Learning rate for Generator.")
 
-    parser.add_argument('--fake_sample_weight', type=float, default=1.0,
+    parser.add_argument('--pseudo_sample_weight', type=float, default=1.0,
                         help="Weight of fake sample loss for Discriminator.")
 
     parser.add_argument('--fine_tune', action='store_true',
