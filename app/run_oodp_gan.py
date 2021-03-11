@@ -887,8 +887,12 @@ if __name__ == '__main__':
     parser.add_argument('--remove_punctuation', action='store_true', default=False,
                         help='Whether to remove punctuation.')
 
+    parser.add_argument('--stopwords', action='store_true', default=False,
+                        help='Whether to remove stopwords.')
+
     parser.add_argument('--logarithm', action='store_false', default=True,
                         help='Whether to logarithm.')
+
 
     args = parser.parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
