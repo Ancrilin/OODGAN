@@ -44,7 +44,7 @@ def soft_voting(data):
 if __name__ == '__main__':
     all_binary_y = np.load('../data/smp/all_binary_y.npy')
 
-    path = '../output/base-gan-oodp-alpha0.99_manual_remove_entity_mode2'
+    path = '../output/smp/base-gan-oodp-alpha0.85'
     data = get_data(path)
     label, score = soft_voting(data)
     print("label")
