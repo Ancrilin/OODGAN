@@ -1,4 +1,6 @@
 # OODGAN
+github地址为：https://github.com/Ancrilin/OODGAN
+
 使用的数据集为哈工大第二届的SMP数据集
 
 app文件夹内是运行文件，run_sh内是已经设置了参数的sh运行脚本文件
