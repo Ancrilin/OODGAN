@@ -47,7 +47,7 @@ def check_args(args):
         raise argparse.ArgumentError('Gradient_accumulation_steps should >=1 and train_batch_size%gradient_accumulation_steps == 0')
 
 gross_result = {}
-gross_result['type'] = ['ind', 'oos']
+gross_result['type'] = ['oos', 'ind']
 
 def main(args):
     """
@@ -97,6 +97,7 @@ def main(args):
     config = args.__dict__
     config['model_save_path'] = os.path.join(args.output_dir, 'save', 'bert.pt')
     config['n_class'] = n_class
+    logger.info("n_class: " + str(n_class))
     # 实例化bert encoder
     model = BertClassifier(bert_config, n_class)  # Bert encoder
     logger.info("fine_tune: " + str(args.fine_tune))
