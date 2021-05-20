@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectPlainTextFileTypeManager">
-    <file url="file://$PROJECT_DIR$/data/smp/binary_task1.json" />
-  </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.7.9 (sftp://teacher_wenbin@172.26.14.17:22/opt/miniconda3/envs/wenbin/bin/python)" project-jdk-type="Python SDK" />
 </project>

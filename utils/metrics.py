@@ -112,6 +112,29 @@ def cal_eer(y_true, y_score):
     return eer
 
 
+import operator
+def ErrorRateAt95Recall_t(labels, scores):
+    recall_point = 0.95
+    # Sort label-score tuples by the score in descending order.
+    temp = zip(labels, scores)
+    # operator.itemgetter(1)按照第二个元素的次序对元组进行排序，reverse=True是逆序，即按照从大到小的顺序排列
+    # sorted_scores.sort(key=operator.itemgetter(1), reverse=True)
+    sorted_scores = sorted(temp, key=operator.itemgetter(1), reverse=True)
+
+    # Compute error rate
+    # n_match表示测试集正样本数目
+    n_match = sum(1 for x in sorted_scores if x[0] == 1)
+    n_thresh = recall_point * n_match
+    tp = 0
+    count = 0
+    for label, score in sorted_scores:
+        count += 1
+        if label == 1:
+            tp += 1
+        if tp >= n_thresh:
+            break
+    return float(count - tp) / count
+
 # 平均数
 def get_mean(array: list):
     return np.mean(array)
