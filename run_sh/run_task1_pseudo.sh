@@ -2,6 +2,8 @@
 
 seeds="16 123 256 512 1024 1536 2048 4096 8192 47790 10464 28349 48533 28602 16850 35085"
 
+# $1 pseudo
+
 for seed in ${seeds} ; do
   python -m app.run_oodp_gan \
   --seed=${seed}  \
@@ -21,8 +23,9 @@ for seed in ${seeds} ; do
   --do_vis \
   --feature_dim=768 \
   --G_z_dim=1024  \
-  --result=task1-base/task1-base \
-  --output_dir=task1-base/task1-base-${seed}
+  --pseudo_sample_weight=${1} \
+  --result=task1-gan-pseduo/task1-gan-pseduo \
+  --output_dir=task1-gan-pseduo/task1-gan-pseduo-${seed}
 
 done
 exit 0
