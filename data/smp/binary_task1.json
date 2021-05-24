@@ -393,7 +393,7 @@
         {
             "text": "《武动乾坤》",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "帮我转发邮件",
@@ -968,7 +968,7 @@
         {
             "text": "摩尔勇士",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "把我打开淘宝的网页",
@@ -993,7 +993,7 @@
         {
             "text": "苏宁易购",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "把淘宝网打开",
@@ -1028,7 +1028,7 @@
         {
             "text": "激动",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "新蛋网",
@@ -1133,7 +1133,7 @@
         {
             "text": "幻剑书盟",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "聚友网",
@@ -1143,7 +1143,7 @@
         {
             "text": "宜家",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "广西新闻网",
@@ -1173,7 +1173,7 @@
         {
             "text": "新浪汽车",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "apple",
@@ -1183,7 +1183,7 @@
         {
             "text": "九阴真经",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我想上网易",
@@ -1213,7 +1213,7 @@
         {
             "text": "心绝网上人间",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "上美空网",
@@ -1598,12 +1598,12 @@
         {
             "text": "金瓶梅",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "帮我找一找龙门飞甲",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "看中国好声音",
@@ -1613,27 +1613,27 @@
         {
             "text": "智慧树",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "开心大冒险",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "亲爱的孟凯韬",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "看空霸",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "汉武大帝",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "魔幻剧",
@@ -1648,32 +1648,32 @@
         {
             "text": "情债",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "苍狼",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我要当八路军",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "大头儿子小头爸爸",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "最美的时光",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "五号特工组",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "13年孙红雷演的片子",
@@ -1683,7 +1683,7 @@
         {
             "text": "爱在何方第三期",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "那么最近有什么好电影呢？",
@@ -1708,7 +1708,7 @@
         {
             "text": "花开半夏",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "查找电影",
@@ -1723,7 +1723,7 @@
         {
             "text": "知青",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "给我找最新的盗梦空间",
@@ -1733,7 +1733,7 @@
         {
             "text": "死亡复生",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "好无聊哇有什么好看的电影",
@@ -1748,7 +1748,7 @@
         {
             "text": "歧路兄弟",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "想唱就唱",
@@ -1768,12 +1768,12 @@
         {
             "text": "忍者之路",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "爱在旅途",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "想看韩剧",
@@ -1813,7 +1813,7 @@
         {
             "text": "帮我打开步步惊心",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "最近有什么好看的电视连续剧武打的。",
@@ -1848,7 +1848,7 @@
         {
             "text": "满秋",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "请帮我查找一下奥特曼大电影",
@@ -1873,22 +1873,22 @@
         {
             "text": "北疆战士",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "女子特警队之火凤凰",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "当婆婆遇上妈",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "爱情公约",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "高清动作电影",
@@ -1913,17 +1913,17 @@
         {
             "text": "魔幻手机",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "幻影忍者",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "古惑仔",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "电影私人定制",
@@ -1948,7 +1948,7 @@
         {
             "text": "劲爆在车",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我想要看很火的电影",
@@ -1963,7 +1963,7 @@
         {
             "text": "妖精的尾巴",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "风车第十五集",
@@ -1973,7 +1973,7 @@
         {
             "text": "杨三姐告状",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "情景剧电视剧",
@@ -1988,7 +1988,7 @@
         {
             "text": "赛罗奥特曼",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我想看变形金刚三",
@@ -2013,7 +2013,7 @@
         {
             "text": "我的爱金枝玉叶",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "有什么新电影",
@@ -2023,7 +2023,7 @@
         {
             "text": "妈妈的花样年华",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我要看李连杰的电影",
@@ -2033,7 +2033,7 @@
         {
             "text": "狸猫换太子",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "有没有张艺谋导演的热门电影",
@@ -2048,12 +2048,12 @@
         {
             "text": "老版红楼梦",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "一个鬼子都不留",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我想看爱情闯进门",
@@ -2068,17 +2068,17 @@
         {
             "text": "命运派对",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "胜者即是正义",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "文娱播报",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "找一下詹姆斯卡梅隆拍的电影",
@@ -2103,7 +2103,7 @@
         {
             "text": "江山",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "独立纵队电视剧",
@@ -2138,17 +2138,17 @@
         {
             "text": "半夜不要照镜子",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "铁甲钢拳",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "读心专家",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "电视剧火凤凰",
@@ -2158,7 +2158,7 @@
         {
             "text": "有你才幸福",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "推理动漫",
@@ -2203,7 +2203,7 @@
         {
             "text": "地心历险记二",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "搜索下绿巨人",
@@ -2218,17 +2218,17 @@
         {
             "text": "青春期撞上更年期二",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "正者无敌",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "武间道",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "欧阳震华的罪案电视剧",
@@ -2248,7 +2248,7 @@
         {
             "text": "康熙大帝",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "2013年陈可辛导演的好看的电影",
@@ -2263,17 +2263,17 @@
         {
             "text": "薛平贵与王宝钏",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "钢铁侠三",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "福尔摩斯",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "英雄本色电影",
@@ -2293,7 +2293,7 @@
         {
             "text": "生活大爆炸",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "宫崎骏动画电影",
@@ -2313,12 +2313,12 @@
         {
             "text": "新扎师妹",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "猫眼三姐妹",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我是说我要看一起又看流星雨",
@@ -2338,12 +2338,12 @@
         {
             "text": "天机富春山居图",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我是特种兵二",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我想看张艺谋导演的电影",
@@ -2353,12 +2353,12 @@
         {
             "text": "中国合伙人",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "智取威虎山",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "下半年的电视剧",
@@ -2368,7 +2368,7 @@
         {
             "text": "喜羊羊与灰太",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "韩国电视连续剧老大",
@@ -2378,12 +2378,12 @@
         {
             "text": "甄嬛传高清",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "陈真",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "影视流星花园",
@@ -2403,7 +2403,7 @@
         {
             "text": "中国新声代",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "你好我想看电影",
@@ -2413,12 +2413,12 @@
         {
             "text": "捍卫者",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我的幸福",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "查找90年代好评的武侠电影",
@@ -2433,7 +2433,7 @@
         {
             "text": "美好的时代",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "最近有什么科幻电影？",
@@ -2443,7 +2443,7 @@
         {
             "text": "铁甲威虫",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "请播放一下举起手来",
@@ -2463,7 +2463,7 @@
         {
             "text": "刘三姐",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "搜王菲演唱会",
@@ -2473,12 +2473,12 @@
         {
             "text": "心术电影",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "海棉宝宝",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "请打开电影",
@@ -2503,7 +2503,7 @@
         {
             "text": "中国最强音",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "打开汕头的天气预报",
@@ -3158,7 +3158,7 @@
         {
             "text": "黄狼。",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "把张玉娟的手机号码发送给吴伟",
@@ -6003,7 +6003,7 @@
         {
             "text": "赶集",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我想上qq了",
@@ -6018,7 +6018,7 @@
         {
             "text": "金山词霸",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "下载飞信",
@@ -6033,7 +6033,7 @@
         {
             "text": "搜狗",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "打开uc浏览器",
@@ -6048,7 +6048,7 @@
         {
             "text": "百度百科",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "帮我打开电话本",
@@ -6078,7 +6078,7 @@
         {
             "text": "酷狗音乐盒",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "打开手机QQ恩",
@@ -6123,7 +6123,7 @@
         {
             "text": "有道词典",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "帮我开捕鱼达人",
@@ -6193,7 +6193,7 @@
         {
             "text": "南钢",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "腾讯公司的股票",
@@ -6263,7 +6263,7 @@
         {
             "text": "章源钨业",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "中国银行股票怎么样",
@@ -6298,7 +6298,7 @@
         {
             "text": "伊利股份",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "腾讯股票昨日收盘价",
@@ -6378,7 +6378,7 @@
         {
             "text": "百大",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "富瑞特装股票",
@@ -6458,7 +6458,7 @@
         {
             "text": "天利",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "代码000800的股票涨幅是多少",
@@ -9938,7 +9938,7 @@
         {
             "text": "老故事",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "央视1高清",
@@ -10018,7 +10018,7 @@
         {
             "text": "高尔夫网球",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "北京财经台",
@@ -10118,7 +10118,7 @@
         {
             "text": "AXN",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "就是很想看一下大众影院",
@@ -10973,7 +10973,7 @@
         {
             "text": "王菲传奇。",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "来一首宝贝对不起",
@@ -15867,7 +15867,7 @@
         {
             "text": "午夜凶铃",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "看最近有什么电影？",
@@ -15882,7 +15882,7 @@
         {
             "text": "福尔摩斯探案集",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "最新电影",
@@ -15897,12 +15897,12 @@
         {
             "text": "一路向西",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "台剧",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "叶落长安电视剧",
@@ -15912,12 +15912,12 @@
         {
             "text": "穷孩子富孩子",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "神兵小将",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "需要你帮我推荐一下电影",
@@ -15927,7 +15927,7 @@
         {
             "text": "古墓丽影",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "播放卡洛斯沙尔阿",
@@ -15937,12 +15937,12 @@
         {
             "text": "天才碰麻瓜",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "死亡笔记",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "给我播放最近好评的电影",
@@ -15952,12 +15952,12 @@
         {
             "text": "封神榜",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "光阴",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "最近有什么好看的电影？啊？",
@@ -15972,12 +15972,12 @@
         {
             "text": "共同关注",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "蓝猫龙骑团",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "电视剧粘豆包",
@@ -16002,7 +16002,7 @@
         {
             "text": "熊出没啊",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "播放搞笑动漫",
@@ -16012,7 +16012,7 @@
         {
             "text": "封神太子",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "有什么好看的电影没有",
@@ -16027,7 +16027,7 @@
         {
             "text": "粉红女郎",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "你给我推荐个电影",
@@ -16072,7 +16072,7 @@
         {
             "text": "中国霸王花",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "最近流行电影。",
@@ -16087,12 +16087,12 @@
         {
             "text": "新水浒传",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "抬头见喜",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "我要看巴拉小魔仙",
@@ -16107,12 +16107,12 @@
         {
             "text": "大西南剿匪记",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "荒野求",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "有没有九十年代热门的动漫",
@@ -17242,7 +17242,7 @@
         {
             "text": "国祥",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "黔轮胎的走势如何",
@@ -18492,7 +18492,7 @@
         {
             "text": "图库",
             "domain": "in",
-            "knowledge": 0
+            "knowledge": 1
         },
         {
             "text": "打开德州扑克",

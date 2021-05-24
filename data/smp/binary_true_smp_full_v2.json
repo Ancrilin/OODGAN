@@ -10148,7 +10148,7 @@
         {
             "text": "查找桑拿",
             "domain": "in",
-            "knowledge": 1
+            "knowledge": 0
         },
         {
             "text": "搜索最近的，科幻电影。",
@@ -10508,7 +10508,7 @@
         {
             "text": "查询神鬼认证",
             "domain": "in",
-            "knowledge": 1
+            "knowledge": 0
         },
         {
             "text": "李瑞英主持的最新的新闻节目",
@@ -10673,7 +10673,7 @@
         {
             "text": "太阳第九集",
             "domain": "in",
-            "knowledge": 1
+            "knowledge": 0
         },
         {
             "text": "搞笑的鬼片",
@@ -10788,7 +10788,7 @@
         {
             "text": "x战警第一部",
             "domain": "in",
-            "knowledge": 1
+            "knowledge": 0
         },
         {
             "text": "中国新声代",
@@ -11438,7 +11438,7 @@
         {
             "text": "apple",
             "domain": "in",
-            "knowledge": 1
+            "knowledge": 0
         },
         {
             "text": "九阴真经",
@@ -11483,7 +11483,7 @@
         {
             "text": "请打开八六八四",
             "domain": "in",
-            "knowledge": 1
+            "knowledge": 0
         },
         {
             "text": "中国新闻网网站",
