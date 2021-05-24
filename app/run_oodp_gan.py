@@ -37,6 +37,8 @@ from utils.tools import ErrorRateAt95Recall, save_result, save_feature, std_mean
 import utils.tools as tools
 from data_processor.psw_processor import smp_psw
 
+from utils.metrics import ErrorRateAt95Recall_t
+
 
 SEED = 123
 freeze_data = dict()
@@ -216,6 +218,12 @@ def main(args):
                 optimizer_D.zero_grad()
                 real_f_vector, discriminator_output, classification_output = D(real_feature, return_feature=True)
                 discriminator_output = discriminator_output.squeeze()
+                # print("dis")
+                # print(discriminator_output.size())
+                # print("y")
+                # print(np.shape(y))
+                # print(y)
+                # print(token)
                 real_loss = adversarial_loss(discriminator_output, (y != 0.0).float())
                 # real_loss = real_loss_func(discriminator_output, (y != 0.0).float())
                 if n_class > 2:  # 大于2表示除了训练判别器还要训练分类器
@@ -298,8 +306,10 @@ def main(args):
                 logger.info('valid_oos_ind_recall: {}'.format(eval_result['oos_ind_recall']))
                 logger.info('valid_oos_ind_f_score: {}'.format(eval_result['oos_ind_f_score']))
                 logger.info('valid_auc: {}'.format(eval_result['auc']))
+                # logger.info(
+                #     'valid_fpr95: {}'.format(ErrorRateAt95Recall(eval_result['all_binary_y'], eval_result['y_score'])))
                 logger.info(
-                    'valid_fpr95: {}'.format(ErrorRateAt95Recall(eval_result['all_binary_y'], eval_result['y_score'])))
+                    'valid_fpr95: {}'.format(ErrorRateAt95Recall_t(eval_result['all_binary_y'], eval_result['y_score'])))
 
         if args.patience >= args.n_epoch:
             save_gan_model(D, G, config['gan_save_path'])
@@ -399,7 +409,8 @@ def main(args):
 
         y_score = all_detection_preds.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
-        fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
+        # fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
+        fpr95 = ErrorRateAt95Recall_t(all_binary_y, y_score)
 
         report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
 
@@ -498,7 +509,8 @@ def main(args):
 
         y_score = all_detection_preds.squeeze().tolist()
         eer = metrics.cal_eer(all_binary_y, y_score)
-        fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
+        # fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
+        fpr95 = ErrorRateAt95Recall_t(all_binary_y, y_score)
 
         report = metrics.binary_classification_report(all_y, all_detection_binary_preds)
 
@@ -683,7 +695,8 @@ def main(args):
         gross_result['eval_oos_ind_recall'] = eval_result['oos_ind_recall']
         gross_result['eval_oos_ind_f_score'] = eval_result['oos_ind_f_score']
         gross_result['eval_eer'] = eval_result['eer']
-        gross_result['eval_fpr95'] = ErrorRateAt95Recall(eval_result['all_binary_y'], eval_result['y_score'])
+        # gross_result['eval_fpr95'] = ErrorRateAt95Recall(eval_result['all_binary_y'], eval_result['y_score'])
+        gross_result['eval_fpr95'] = ErrorRateAt95Recall_t(eval_result['all_binary_y'], eval_result['y_score'])
         gross_result['eval_auc'] = eval_result['auc']
 
     if args.do_test:
@@ -716,7 +729,8 @@ def main(args):
         gross_result['test_oos_ind_recall'] = test_result['oos_ind_recall']
         gross_result['test_oos_ind_f_score'] = test_result['oos_ind_f_score']
         gross_result['test_eer'] = test_result['eer']
-        gross_result['test_fpr95'] = ErrorRateAt95Recall(test_result['all_binary_y'], test_result['y_score'])
+        # gross_result['test_fpr95'] = ErrorRateAt95Recall(test_result['all_binary_y'], test_result['y_score'])
+        gross_result['test_fpr95'] = ErrorRateAt95Recall_t(test_result['all_binary_y'], test_result['y_score'])
         gross_result['test_auc'] = test_result['auc']
 
         # 输出错误cases

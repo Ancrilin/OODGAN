@@ -156,6 +156,7 @@ def ErrorRateAt95Recall(labels, scores):
     thresh_index = numpy.argmax(numpy.cumsum(sorted_labels) >= n_thresh)
     FP = numpy.sum(sorted_labels[:thresh_index] == 0)
     TN = numpy.sum(sorted_labels[thresh_index:] == 0)
+    # 此处可能会为0, 产生除数为0出错
     if float(FP + TN) == 0:
         return float(-1)
     return float(FP) / float(FP + TN)

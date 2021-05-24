@@ -27,6 +27,8 @@ from data_utils.dataset import MyDataset
 from utils.tools import EarlyStopping, ErrorRateAt95Recall, save_model, load_model, save_result, output_cases, save_feature, std_mean
 import utils.metrics as metrics
 
+from utils.metrics import ErrorRateAt95Recall_t
+
 # 检测设备
 if torch.cuda.is_available():
     device = 'cuda:0'
@@ -240,7 +242,8 @@ def main(args):
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
             all_pred, all_y)
         ind_class_acc = metrics.ind_class_accuracy(all_pred, all_y)
-        fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
+        # fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
+        fpr95 = ErrorRateAt95Recall_t(all_binary_y, y_score)
 
         report = metrics.binary_classification_report(all_y, all_pred)
 
@@ -294,7 +297,8 @@ def main(args):
         oos_ind_precision, oos_ind_recall, oos_ind_fscore, _ = metrics.binary_recall_fscore(
             all_pred, all_y)
         ind_class_acc = metrics.ind_class_accuracy(all_pred, all_y)
-        fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
+        # fpr95 = ErrorRateAt95Recall(all_binary_y, y_score)
+        fpr95 = ErrorRateAt95Recall_t(all_binary_y, y_score)
 
         report = metrics.binary_classification_report(all_y, all_pred)
 
@@ -356,7 +360,8 @@ def main(args):
         gross_result['eval_oos_ind_recall'] = eval_result['oos_ind_recall']
         gross_result['eval_oos_ind_f_score'] = eval_result['oos_ind_f_score']
         gross_result['eval_eer'] = eval_result['eer']
-        gross_result['eval_fpr95'] = ErrorRateAt95Recall(eval_result['all_binary_y'], eval_result['y_score'])
+        # gross_result['eval_fpr95'] = ErrorRateAt95Recall(eval_result['all_binary_y'], eval_result['y_score'])
+        gross_result['eval_fpr95'] = ErrorRateAt95Recall_t(eval_result['all_binary_y'], eval_result['y_score'])
         gross_result['eval_auc'] = eval_result['auc']
 
     if args.do_test:
@@ -382,7 +387,8 @@ def main(args):
         gross_result['test_oos_ind_recall'] = test_result['oos_ind_recall']
         gross_result['test_oos_ind_f_score'] = test_result['oos_ind_f_score']
         gross_result['test_eer'] = test_result['eer']
-        gross_result['test_fpr95'] = ErrorRateAt95Recall(test_result['all_binary_y'], test_result['y_score'])
+        # gross_result['test_fpr95'] = ErrorRateAt95Recall(test_result['all_binary_y'], test_result['y_score'])
+        gross_result['test_fpr95'] = ErrorRateAt95Recall_t(test_result['all_binary_y'], test_result['y_score'])
         gross_result['test_auc'] = test_result['auc']
 
         # 输出错误cases
