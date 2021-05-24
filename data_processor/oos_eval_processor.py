@@ -79,7 +79,6 @@ class OOS_Eval_Processor(BertProcessor):
     def remove_minlen(self, dataset, minlen):
         n_dataset = []
         for i, line in enumerate(dataset):
-            print(line)
             if len(self.text_tokenizer(line[0])) >= minlen:
                 n_dataset.append(line)
         return n_dataset
