@@ -79,14 +79,15 @@ class OOS_Eval_Processor(BertProcessor):
     def remove_minlen(self, dataset, minlen):
         n_dataset = []
         for i, line in enumerate(dataset):
-            if len(line[0]) >= minlen:
+            print(line)
+            if len(self.text_tokenizer(line[0])) >= minlen:
                 n_dataset.append(line)
         return n_dataset
 
     def remove_maxlen(self, dataset, maxlen):
         n_dataset = []
         for i, line in enumerate(dataset):
-            if len(line[0]) <= maxlen:
+            if len(self.text_tokenizer(line[0])) <= maxlen:
                 n_dataset.append(line)
         return n_dataset
 
@@ -149,6 +150,9 @@ class OOS_Eval_Processor(BertProcessor):
             conf_intveral = np.exp(conf_intveral)
         return conf_intveral
 
+    def text_tokenizer(self, text):
+        return self.tokenizer.tokenize(text)
+
 
 if __name__ == '__main__':
     from config import BertConfig
@@ -173,3 +177,10 @@ if __name__ == '__main__':
     print(data['val'])
     print(data['test'])
     print(processor.get_conf_intveral(data['train']['all_len'], 0.90, logarithm=True))
+    print(processor.text_tokenizer("it is an apple."))
+    data_path = "data/oos-eval/binary_data_small.json"
+    print(os.getcwd())
+    text_train_set = processor.read_dataset(data_path, ['train'])
+    print(np.shape(text_train_set))
+    print(text_train_set[0])
+    print(processor.text_tokenizer(text_train_set[0][0]))
