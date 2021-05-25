@@ -14,15 +14,15 @@ for seed in ${seeds} ; do
   --train_batch_size=32 \
   --bert_type=bert-base-uncased \
   --dataset=oos-eval \
-  --data_file=binary_unsersample \
+  --data_file=binary_undersample \
   --do_train \
   --do_eval \
   --do_test \
   --do_vis \
   --feature_dim=768 \
   --G_z_dim=1024  \
-  --result=unsersample-base-gan/unsersample-base-gan \
-  --output_dir=unsersample-base-gan/unsersample-base-gan-${seed}
+  --result=undersample-base-gan/undersample-base-gan \
+  --output_dir=undersample-base-gan/undersample-base-gan-${seed}
 
 done
 exit 0

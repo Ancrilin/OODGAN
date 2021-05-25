@@ -584,7 +584,8 @@ def main(args):
         # 去除训练集中的ood数据
         if args.dataset == "smp" and args.remove_oodp:
             logger.info('remove ood data in train_dataset')
-            text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']  # chat is ood data
+            # text_train_set = [sample for sample in text_train_set if sample['domain'] != 'chat']  # chat is ood data
+            text_train_set = [sample for sample in text_train_set if sample['domain'] != 'oos']
 
         if args.dataset == "oos-eval" and args.remove_oodp:
             logger.info('remove ood data in train_dataset')

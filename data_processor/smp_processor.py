@@ -125,7 +125,7 @@ class SMP_Processor(BertProcessor):
                 text_len = {}
                 all_text_len = []
                 for line in source[type]:
-                    if line['domain'] == 'chat':
+                    if line['domain'] == 'oos':
                         n_ood += 1
                     else:
                         n_id += 1
@@ -174,7 +174,7 @@ if __name__ == '__main__':
     processor.load_label(label_path)
     print(processor.label_to_id)
     print(processor.id_to_label)
-    print(processor.parse_line({'text':"不是吧", 'domain':'chat'}))
+    print(processor.parse_line({'text':"不是吧", 'domain':'oos'}))
     print(bertConfig.hidden_size)
     file_path = 'data/smp/true_smp_full.json'
     data = processor.get_smp_data_info(file_path)

@@ -1,8 +1,6 @@
 #! /bin/bash
 
-seeds="16 123 256 512 1024 1536 2048 4096 8192 47790 10464 28349 48533 28602 16850 35085"
-
-# $1 pseudo
+seeds="16"
 
 for seed in ${seeds} ; do
   python -m app.run_oodp_gan \
@@ -16,16 +14,15 @@ for seed in ${seeds} ; do
   --train_batch_size=32 \
   --bert_type=bert-base-chinese \
   --dataset=smp \
-  --data_file=binary_task1 \
+  --data_file=task1_chat_cinemas_cookbook_novel_website \
   --do_train \
   --do_eval \
   --do_test \
   --do_vis \
   --feature_dim=768 \
   --G_z_dim=1024  \
-  --pseudo_sample_weight=${1} \
-  --result=task1-gan-pseduo/task1-gan-pseduo-${1} \
-  --output_dir=task1-gan-pseduo/task1-gan-pseduo-${1}/task1-gan-pseduo-${1}-${seed}
+  --result=task1-base-gan-chat_cinemas_cookbook_novel_website/task1-base-gan-chat_cinemas_cookbook_novel_website \
+  --output_dir=task1-base-gan-chat_cinemas_cookbook_novel_website/task1-base-gan-${seed}-chat_cinemas_cookbook_novel_website
 
 done
 exit 0
