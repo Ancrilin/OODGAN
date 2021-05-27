@@ -327,6 +327,23 @@ def main(args):
         text_train_set = processor.read_dataset(data_path, ['train'])
         text_dev_set = processor.read_dataset(data_path, ['val'])
 
+        if args.dataset == 'smp':
+            text_data = processor.get_smp_data_info(data_path)
+        if args.dataset == 'oos-eval':
+            text_data = processor.get_oos_data_info(data_path)
+        logger.info("train data:")
+        logger.info("num:" + str(text_data['train']['num']))
+        logger.info("ood:" + str(text_data['train']['ood']))
+        logger.info("id:" + str(text_data['train']['id']))
+        logger.info("valid data:")
+        logger.info("num:" + str(text_data['val']['num']))
+        logger.info("ood:" + str(text_data['val']['ood']))
+        logger.info("id:" + str(text_data['val']['id']))
+        logger.info("test data:")
+        logger.info("num:" + str(text_data['test']['num']))
+        logger.info("ood: " + str(text_data['test']['ood']))
+        logger.info("id: " + str(text_data['test']['id']))
+
         # 文本转换为ids
         # 格式为[[token_ids], [mask], [type_ids], label_to_id]
         train_features = processor.convert_to_ids(text_train_set)

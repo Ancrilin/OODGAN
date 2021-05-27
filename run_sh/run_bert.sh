@@ -12,7 +12,7 @@ for seed in ${seeds} ; do
   --n_epoch=500 \
   --patience=10 \
   --dataset=smp \
-  --data_file=binary_smp_full \
+  --data_file=binary_true_smp_full_v2 \
   --bert_type=bert-base-chinese \
   --do_train \
   --do_eval \
